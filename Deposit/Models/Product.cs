@@ -89,10 +89,10 @@ namespace Deposit.Models
 
         public void Rename(string name, string description)
         {
-            if (name == String.Empty)
+            if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Name can't be empty.");
 
-            if (description == String.Empty)
+            if (string.IsNullOrEmpty(description))
                 throw new ArgumentException("Description can't be empty.");
 
             Name = name;
