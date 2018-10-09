@@ -1,0 +1,78 @@
+using System;
+using Xunit;
+using Deposit.Models;
+
+namespace Deposit_Tests
+{
+    public class ProviderTest
+    {
+        [Fact]
+        public void MakeProvider_EmptyName_ExceptionThrown()
+        {
+            // act
+            var e = Assert.Throws<ArgumentException>(() => Provider.MakeProvider(string.Empty, "17475801000106"));
+        }
+
+        [Fact]
+        public void MakeProvider_EmptyCnpj_ExceptionThrown()
+        {
+            // act
+            var e = Assert.Throws<ArgumentException>(() => Provider.MakeProvider("Julio", string.Empty));
+        }
+
+        [Fact]
+        public void MakeProvider_InvalidCnpj_ExceptionThrown()
+        {
+            // act
+            var e = Assert.Throws<ArgumentException>(() => Provider.MakeProvider("Julio", "17475801000107"));
+        }
+
+        [Fact]
+        public void MakeProvider_ValidParameters_CustomerCreated()
+        {
+            // act
+            var provider = Provider.MakeProvider("Julio", "17475801000106");
+            
+            // assert
+            Assert.Equal(provider.Name, "Julio");
+            Assert.Equal(provider.Cnpj, "17475801000106");
+        }
+
+        [Fact]
+        public void UpdateDocumentation_InvalidCnpj_ExceptionThrown()
+        {
+            //arrange
+            var provider = Provider.MakeProvider("Julio", "17475801000106");
+            
+            // act
+            var e = Assert.Throws<ArgumentException>(() => provider.UpdateDocumentation(string.Empty, "17475801000107"));
+        }
+
+        [Fact]
+        public void UpdateDocumentation_ValidParameters_ChangesNameAndCnpj()
+        {
+            //arrange
+            var provider = Provider.MakeProvider("Julio", "17475801000106");
+            
+            // act
+            provider.UpdateDocumentation("Leonardo", "09883060000174");
+            
+            // assert
+            Assert.Equal(provider.Name, "Leonardo");
+            Assert.Equal(provider.Cnpj, "09883060000174");
+        }
+
+        [Fact]
+        public void ProviderDelete()
+        {
+            // arrange
+            var provider = Provider.MakeProvider("Julio", "17475801000106");
+
+            // act
+            provider.Delete();
+
+            // assert
+            Assert.True(provider.IsDeleted);
+        }
+    }
+}
