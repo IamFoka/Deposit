@@ -158,7 +158,7 @@ namespace Deposit_Tests
         }
 
         [Fact]
-        public void ProviderOrder_Delete()
+        public void DeleteProviderOrder_ValidParameters_ProviderOrderDeleted()
         {
             // arrange
             var provider = Provider.MakeProvider("Julio", "09883060000174");
@@ -169,6 +169,19 @@ namespace Deposit_Tests
 
             // assert
             Assert.True(providerOrder.IsDeleted);
+        }
+
+        [Fact]
+        public void DeleteProviderOrder_DeletedProviderOrder_ExceptionThrown()
+        {
+            // arrange
+            var provider = Provider.MakeProvider("Julio", "09883060000174");
+            var providerOrder = ProviderOrder.MakeProviderOrder(5, provider);
+            providerOrder.Delete();
+
+            // act
+            var e = Assert.Throws<InvalidOperationException>(() => providerOrder.Delete());
+
         }
     }
 }
