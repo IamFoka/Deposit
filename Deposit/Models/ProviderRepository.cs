@@ -22,7 +22,7 @@ namespace Deposit.Models
 
         public Provider Read(Guid guid)
         {
-            return Providers.FirstOrDefault(c => c.Id == guid);
+            return Providers.FirstOrDefault(c => c.Id == guid && !c.IsDeleted);
         }
 
         public void Update(Guid guid, Provider t)
@@ -38,7 +38,13 @@ namespace Deposit.Models
 
         public List<Provider> ReadAll()
         {
-            return new List<Provider>(Providers);
+            var l = new List<Provider>();
+            
+            foreach (var i in Providers)
+                if (!i.IsDeleted)
+                    l.Add(i);
+
+            return l;
         }
     }
 }
