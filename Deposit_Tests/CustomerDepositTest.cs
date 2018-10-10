@@ -76,7 +76,7 @@ namespace Deposit_Tests
         }
 
         [Fact]
-        public void CustomerDeposit_Delete()
+        public void DeleteCustomerDeposit_ValidParameters_ExceptionThrown()
         {
             // arrange
             var product = Product.MakeProduct("Test product", "Test product", 15, Dimensions.MakeDimensions(11, 12, 13));

@@ -39,12 +39,18 @@ namespace Deposit.Models
 
         public void AddItem(Product product, float amount)
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Order is deleted.");
+
             var providerOrderItem = ProviderOrderItem.MakeProviderOrderItem(this, product, amount);
             ProviderOrderItems.Add(providerOrderItem);
         }
 
         public void UpdateTotalValue(float value)
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Order is deleted.");
+
             if (value == 0)
                 throw new ArgumentException("Value can't be equal to zero 0.");
 
@@ -56,6 +62,9 @@ namespace Deposit.Models
 
         public override void Delete()
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Order is already deleted.");
+
             foreach (var item in ProviderOrderItems)
                 item.Delete();
 

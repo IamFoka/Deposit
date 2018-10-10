@@ -184,5 +184,41 @@ namespace Deposit_Tests
             Assert.True(customerOrder.IsDeleted);
 
         }
+
+        [Fact]
+        public void AddItem_CustomerOrder_Deleted()
+        {
+            // arrange
+            var customer = Customer.MakeCustomer("Julio", "18406811013", DateTime.Now);
+            var customerOrder = CustomerOrder.MakeCustomerOrder(5, customer);
+            customerOrder.Delete();
+
+            // act
+            var e = Assert.Throws<InvalidOperationException>(() => customerOrder.Delete());
+        }
+
+        [Fact]
+        public void UpdateTotalValue_CustomerOrder_Deleted()
+        {
+            // arrange
+            var customer = Customer.MakeCustomer("Julio", "18406811013", DateTime.Now);
+            var customerOrder = CustomerOrder.MakeCustomerOrder(5, customer);
+            customerOrder.Delete();
+
+            // act
+            var e = Assert.Throws<InvalidOperationException>(() => customerOrder.UpdateTotalValue(1));
+        }
+
+        [Fact]
+        public void DeleteCustomerOrder_DeletedCustomerOrder_ExceptionThrown()
+        {
+            // arrange
+            var customer = Customer.MakeCustomer("Julio", "18406811013", DateTime.Now);
+            var customerOrder = CustomerOrder.MakeCustomerOrder(5, customer);
+            customerOrder.Delete();
+
+            // act
+            var e = Assert.Throws<InvalidOperationException>(() => customerOrder.Delete());
+        }
     }
 }

@@ -269,7 +269,7 @@ namespace Deposit_Tests
         }
 
         [Fact]
-        public void CustomerOrderItem_Delete()
+        public void CDeleteCustomerOrderItem_ValidParameters_CustomerOrderItemDeleted()
         {
             // arrange
             var customer = Customer.MakeCustomer("julio", "05526485072", DateTime.Now);
@@ -284,5 +284,51 @@ namespace Deposit_Tests
             // assert
             Assert.True(customerOrderItem.IsDeleted);
         }
+
+        [Fact]
+        public void ChanceAmount_ItemDeleted_ExceptionThrown()
+        {
+            // arrange
+            var customer = Customer.MakeCustomer("julio", "05526485072", DateTime.Now);
+            var customerOrder = CustomerOrder.MakeCustomerOrder(7, customer);
+            var product = Product.MakeProduct("Test product", "Test product", 15, Dimensions.MakeDimensions(11, 12, 13));
+            product.UpdateAmount(15);
+            var customerOrderItem = CustomerOrderItem.MakeCustomerOrderItem(customerOrder, product, 5);
+            customerOrderItem.Delete();
+
+            // act
+            var e = Assert.Throws<InvalidOperationException>(() => customerOrderItem.ChangeAmount(-2));
+
+        }
+
+        [Fact]
+        public void Change_Price_ItemDeleted_ExceptionThrown()
+        {
+            // arrange
+            var customer = Customer.MakeCustomer("julio", "05526485072", DateTime.Now);
+            var customerOrder = CustomerOrder.MakeCustomerOrder(7, customer);
+            var product = Product.MakeProduct("Test product", "Test product", 15, Dimensions.MakeDimensions(11, 12, 13));
+            product.UpdateAmount(15);
+            var customerOrderItem = CustomerOrderItem.MakeCustomerOrderItem(customerOrder, product, 5);
+            customerOrderItem.Delete();
+
+            // act
+            var e = Assert.Throws<InvalidOperationException>(() => customerOrderItem.ChangePrice(20));
+        }
+
+        [Fact]
+        public void Delete_OrderItem_Deleted()
+        {
+            // arrange
+            var customer = Customer.MakeCustomer("julio", "05526485072", DateTime.Now);
+            var customerOrder = CustomerOrder.MakeCustomerOrder(7, customer);
+            var product = Product.MakeProduct("Test product", "Test product", 15, Dimensions.MakeDimensions(11, 12, 13));
+            product.UpdateAmount(15);
+            var customerOrderItem = CustomerOrderItem.MakeCustomerOrderItem(customerOrder, product, 5);
+            customerOrderItem.Delete();
+
+            var e = Assert.Throws<InvalidOperationException>(() => customerOrderItem.Delete());
+        }
+        
     }
 }

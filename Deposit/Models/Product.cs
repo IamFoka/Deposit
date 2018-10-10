@@ -44,6 +44,9 @@ namespace Deposit.Models
 
         private void GenerateSku()
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Product is deleted.");
+
             String sku = String.Empty;
             int count = 0;
 
@@ -68,6 +71,9 @@ namespace Deposit.Models
 
         public void UpdatePrice(float price)
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Product is deleted.");
+
             if (price <= 0)
             {
                 throw new ArgumentException("Price must be larger than 0.");
@@ -78,6 +84,9 @@ namespace Deposit.Models
 
         public void UpdateAmount(float amount)
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Product is deleted.");
+
             if (amount == 0)
                 throw new ArgumentException("Amount can't be equal to 0.");
 
@@ -89,6 +98,9 @@ namespace Deposit.Models
 
         public void Rename(string name, string description)
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Product is deleted.");
+
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Name can't be empty.");
 
@@ -102,8 +114,19 @@ namespace Deposit.Models
 
         public void Redimension(int width, int height, int depth)
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Product is deleted.");
+
             Dimensions.Rescale(width, height, depth);
             GenerateSku();
+        }
+
+        public override void Delete()
+        {
+            if (IsDeleted)
+                throw new InvalidOperationException("Product is already deleted.");
+
+            base.Delete();
         }
     }
 }
