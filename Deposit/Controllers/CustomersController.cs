@@ -84,14 +84,14 @@ namespace Deposit.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateCustomer(Guid id, [FromBody] string name, string cpf)
+        public IActionResult UpdateCustomer(Guid id, [FromBody] CustomerDto dto)
         {
             var customerRepository = new CustomerRepository();
             var customerServices = new CustomerServices();
 
             try
             {
-                customerServices.UpdateCustomer(customerRepository, id, name, cpf);
+                customerServices.UpdateCustomer(customerRepository, id, dto.Name, dto.Cpf);
                 return Ok();
             }
             catch (ArgumentException e)

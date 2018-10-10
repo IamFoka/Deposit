@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Deposit.Services;
 using Deposit.Models;
+using Deposit.Views;
 
 namespace Deposit.Controllers
 {
@@ -14,7 +15,7 @@ namespace Deposit.Controllers
     public class CustomerOrdersController : ControllerBase
     {
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(List<CustomerOrder>))]
+        [ProducesResponseType(200, Type = typeof(List<CustomerOrderView>))]
         [ProducesResponseType(404)]
         public IActionResult GetCustomerOrders()
         {
@@ -29,7 +30,7 @@ namespace Deposit.Controllers
         }
         
         [HttpGet("{id}")]
-        [ProducesResponseType(200, Type = typeof(CustomerOrder))]
+        [ProducesResponseType(200, Type = typeof(CustomerOrderCompleteView))]
         [ProducesResponseType(404)]
         public IActionResult GetCustomerOrder(Guid id)
         {
@@ -40,22 +41,22 @@ namespace Deposit.Controllers
             if (customerOrder == null)
                 return NotFound();
 
-            return Ok(customerOrder); // @TODO retornar os itens junto da ordem
+            return Ok(customerOrder);
         }
 
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(CustomerOrder))]
+        [ProducesResponseType(200, Type = typeof(CustomerOrderCompleteView))]
         [ProducesResponseType(400)]
-        public IActionResult CreateCustomerOrder([FromBody] CustomerOrderDto customerOrderDto)
+        public IActionResult CreateCustomerOrder([FromBody] CustomerOrderDto dto)
         {
             var customerOrderRepository = new CustomerOrderRepository();
             var customerRepository = new CustomerRepository();
+            var productRepository = new ProductRepository();
             var customerOrderServices = new CustomerOrderServices();
 
             try
             {
-                return Ok(customerOrderServices.CreateOrder(customerOrderRepository, customerRepository,
-                    customerOrderDto));
+                return Ok(customerOrderServices.CreateOrder(customerOrderRepository, customerRepository, productRepository, dto));
             }
             catch (ArgumentException e)
             {

@@ -74,13 +74,19 @@ namespace Deposit.Services
                 throw new ArgumentException("Provider not found.");
 
             var order = ProviderOrder.MakeProviderOrder(dto.RegisterNumber, provider);
-            
+            var items = new List<ProviderOrderItemView>();
+
             foreach (var i in dto.Items)
-                order.AddItem(productRepository.Read(i.ProductId), i.Amount);
+            {
+                var product = productRepository.Read(i.ProductId);
+                
+                if (product == null)
+                    throw new ArgumentException("Product not found.");
+                
+                order.AddItem(product, i.Amount);
+            }
             
             repository.Add(order);
-            
-            var items = new List<ProviderOrderItemView>();
             
             foreach (var i in order.ProviderOrderItems)
                 items.Add(new ProviderOrderItemView()
