@@ -6,5 +6,6 @@ namespace Deposit.Controllers
     {
         public int RegisterNumber { get; set; }
         public Guid ProviderId { get; set; }
+        public ProviderOrderItemDto[] Items { get; set; }
     }
 }

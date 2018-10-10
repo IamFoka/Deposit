@@ -4,23 +4,69 @@ using System.Linq;
 using System.Threading.Tasks;
 using Deposit.Controllers;
 using Deposit.Models;
+using Deposit.Views;
 
 namespace Deposit.Services
 {
     public class ProviderOrderServices
     {
-        public List<ProviderOrder> GetAllOrders(IRepository<ProviderOrder> repository)
+        public List<ProviderOrderView> GetAllOrders(IRepository<ProviderOrder> repository)
         {
-            return repository.ReadAll();
+            var orders = repository.ReadAll();
+            var ordersView = new List<ProviderOrderView>();
+            
+            foreach (var i in orders)
+                ordersView.Add(new ProviderOrderView()
+                {
+                    Id = i.Id,
+                    Provider = new ProviderView()
+                    {
+                        Cnpj = i.Provider.Cnpj,
+                        Id = i.Provider.Id,
+                        Name = i.Provider.Name
+                    },
+                    RegisterDate = i.RegisterDate.ToShortDateString(),
+                    RegisterNumber = i.RegisterNumber,
+                    TotalValue = i.TotalValue
+                });
+
+            return ordersView;
         }
 
-        public ProviderOrder GetOrder(IRepository<ProviderOrder> repository, Guid id)
+        public ProviderOrderCompleteView GetOrder(IRepository<ProviderOrder> repository, Guid id)
         {
-            return repository.Read(id);
+            var order = repository.Read(id);
+            var items = new List<ProviderOrderItemView>();
+            
+            foreach (var i in order.ProviderOrderItems)
+                items.Add(new ProviderOrderItemView()
+                {
+                    Amount = i.Amount,
+                    Id = i.Id,
+                    Price = i.Price,
+                    Product = i.Product.Name,
+                    ProductId = i.Product.Id,
+                    TotalValue = i.TotalValue
+                });
+            
+            return new ProviderOrderCompleteView()
+            {
+                Id = order.Id,
+                Provider = new ProviderView()
+                {
+                    Cnpj = order.Provider.Cnpj,
+                    Id = order.Provider.Id,
+                    Name = order.Provider.Name
+                },
+                ProviderOrderItems = items,
+                RegisterDate = order.RegisterDate.ToShortDateString(),
+                RegisterNumber = order.RegisterNumber,
+                TotalValue = order.TotalValue
+            };
         }
 
-        public ProviderOrder CreateOrder(IRepository<ProviderOrder> repository, 
-            IRepository<Provider> providerRepository, ProviderOrderDto dto)
+        public ProviderOrderCompleteView CreateOrder(IRepository<ProviderOrder> repository, 
+            IRepository<Provider> providerRepository, IRepository<Product> productRepository, ProviderOrderDto dto)
         {
             var provider = providerRepository.Read(dto.ProviderId);
             
@@ -29,8 +75,38 @@ namespace Deposit.Services
 
             var order = ProviderOrder.MakeProviderOrder(dto.RegisterNumber, provider);
             
+            foreach (var i in dto.Items)
+                order.AddItem(productRepository.Read(i.ProductId), i.Amount);
+            
             repository.Add(order);
-            return order;
+            
+            var items = new List<ProviderOrderItemView>();
+            
+            foreach (var i in order.ProviderOrderItems)
+                items.Add(new ProviderOrderItemView()
+                {
+                    Amount = i.Amount,
+                    Id = i.Id,
+                    Price = i.Price,
+                    Product = i.Product.Name,
+                    ProductId = i.Product.Id,
+                    TotalValue = i.TotalValue
+                });
+            
+            return new ProviderOrderCompleteView()
+            {
+                Id = order.Id,
+                Provider = new ProviderView()
+                {
+                    Cnpj = order.Provider.Cnpj,
+                    Id = order.Provider.Id,
+                    Name = order.Provider.Name
+                },
+                ProviderOrderItems = items,
+                RegisterDate = order.RegisterDate.ToShortDateString(),
+                RegisterNumber = order.RegisterNumber,
+                TotalValue = order.TotalValue
+            };
         }
 
         public void DeleteProviderOrder(IRepository<ProviderOrder> repository, Guid id)

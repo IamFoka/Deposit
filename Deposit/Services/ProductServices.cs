@@ -21,6 +21,7 @@ namespace Deposit.Services
                     Id = i.Id,
                     Amount = i.Amount,
                     Description = i.Description,
+                    Name = i.Name,
                     Price = i.Price,
                     Sku = i.Sku
                 });
@@ -36,6 +37,7 @@ namespace Deposit.Services
                 Id = product.Id,
                 Amount = product.Amount,
                 Description = product.Description,
+                Name = product.Name,
                 Price = product.Price,
                 Sku = product.Sku
             };
@@ -51,6 +53,7 @@ namespace Deposit.Services
                 Id = product.Id,
                 Amount = product.Amount,
                 Description = product.Description,
+                Name = product.Name,
                 Price = product.Price,
                 Sku = product.Sku
             };

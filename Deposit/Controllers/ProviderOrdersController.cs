@@ -50,11 +50,12 @@ namespace Deposit.Controllers
         {
             var repository = new ProviderOrderRepository();
             var customerRepository = new ProviderRepository();
+            var productRepository = new ProductRepository();
             var services = new ProviderOrderServices();
 
             try
             {
-                return Ok(services.CreateOrder(repository, customerRepository, dto));
+                return Ok(services.CreateOrder(repository, customerRepository, productRepository, dto));
             }
             catch (ArgumentException e)
             {
