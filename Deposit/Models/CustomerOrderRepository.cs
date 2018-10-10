@@ -30,7 +30,7 @@ namespace Deposit.Models
 
         public CustomerOrder Read(Guid guid)
         {
-            return CustomerOrders.FirstOrDefault(c => c.Id == guid);
+            return CustomerOrders.FirstOrDefault(c => c.Id == guid && !c.IsDeleted);
         }
 
         public void Update(Guid guid, CustomerOrder t)
@@ -47,7 +47,13 @@ namespace Deposit.Models
 
         public List<CustomerOrder> ReadAll()
         {
-            return new List<CustomerOrder>(CustomerOrders);
+            var l = new List<CustomerOrder>();
+
+            foreach (var i in CustomerOrders)
+                if (!i.IsDeleted)
+                    l.Add(i);
+
+            return l;
         }
     }
 }

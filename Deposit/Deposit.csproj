@@ -12,4 +12,10 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\PRoviderOrderController.cs" />
+    <Compile Remove="Services\ProviderORderServices.cs" />
+    <Compile Include="Services\ProviderOrderServices.cs" />
+  </ItemGroup>
+
 </Project>
