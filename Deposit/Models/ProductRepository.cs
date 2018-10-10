@@ -22,7 +22,7 @@ namespace Deposit.Models
 
         public Product Read(Guid guid)
         {
-            return Products.FirstOrDefault(c => c.Id == guid);
+            return Products.FirstOrDefault(c => c.Id == guid && !c.IsDeleted);
         }
 
         public void Update(Guid guid, Product t)
@@ -33,12 +33,22 @@ namespace Deposit.Models
         public void Delete(Guid guid)
         {
             var product = Read(guid);
+
+            if (product == null)
+                throw new ArgumentException("Product not found.");
+            
             product.Delete();
         }
 
         public List<Product> ReadAll()
         {
-            return new List<Product>(Products);
+            var l = new List<Product>();
+            
+            foreach(var i in Products)
+                if (!i.IsDeleted)
+                    l.Add(i);
+
+            return l;
         }
     }
 }

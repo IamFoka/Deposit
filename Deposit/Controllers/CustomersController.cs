@@ -102,12 +102,22 @@ namespace Deposit.Controllers
                 return BadRequest(e.Message);
             }
         }
-    }
 
-    public class CustomerDto
-    {
-        public string Name { get; set; }
-        public string Cpf { get; set; }
-        public DateTime BirthDate { get; set; }
+        [HttpGet("{id}/orders")]
+        [ProducesResponseType(404)]
+        public IActionResult GetCustomerOrders(Guid id)
+        {
+            var customerRepository = new CustomerRepository();
+            var customerOrderRepository = new CustomerOrderRepository();
+
+            var customerServices = new CustomerServices();
+
+            var customer = customerServices.GetCustomer(customerRepository, id);
+
+            if (customer == null)
+                return NotFound();
+
+            return NotFound(); // @TODO ver como serializar isso pra json
+        }
     }
 }

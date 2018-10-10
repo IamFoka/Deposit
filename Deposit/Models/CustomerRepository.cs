@@ -46,7 +46,7 @@ namespace Deposit.Models
             var customer = Read(guid);
 
             if (customer == null)
-                throw new ArgumentException();
+                throw new ArgumentException("Customer not found.");
 
             customer.Delete();
         }

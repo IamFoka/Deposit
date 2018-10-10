@@ -101,10 +101,10 @@ namespace Deposit.Models
             if (IsDeleted)
                 throw new InvalidOperationException("Product is deleted.");
 
-            if (name == String.Empty)
+            if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Name can't be empty.");
 
-            if (description == String.Empty)
+            if (string.IsNullOrEmpty(description))
                 throw new ArgumentException("Description can't be empty.");
 
             Name = name;
