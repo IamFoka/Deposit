@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Deposit.Services;
 using Deposit.Models;
+using Deposit.Views;
 
 namespace Deposit.Controllers
 {
@@ -14,7 +15,7 @@ namespace Deposit.Controllers
     public class ProviderOrdersController : ControllerBase
     {
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(List<ProviderOrder>))]
+        [ProducesResponseType(200, Type = typeof(List<ProviderOrderView>))]
         [ProducesResponseType(404)]
         public IActionResult GetCustomerOrders()
         {
@@ -29,7 +30,7 @@ namespace Deposit.Controllers
         }
         
         [HttpGet("{id}")]
-        [ProducesResponseType(200, Type = typeof(ProviderOrder))]
+        [ProducesResponseType(200, Type = typeof(ProviderOrderView))]
         [ProducesResponseType(404)]
         public IActionResult GetProviderOrder(Guid id)
         {
@@ -40,11 +41,11 @@ namespace Deposit.Controllers
             if (order == null)
                 return NotFound();
 
-            return Ok(order); // @TODO retornar os itens junto da ordem
+            return Ok(order);
         }
 
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(ProviderOrder))]
+        [ProducesResponseType(200, Type = typeof(ProviderOrderView))]
         [ProducesResponseType(400)]
         public IActionResult CreateProviderOrder([FromBody] ProviderOrderDto dto)
         {
