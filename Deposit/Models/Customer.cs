@@ -70,5 +70,13 @@ namespace Deposit.Models
             TotalSpent += value;
         }
 
+        public override void Delete()
+        {
+            if (IsDeleted)
+                throw new InvalidOperationException("Customer is already deleted.");
+
+            base.Delete();
+        }
+
     }
 }

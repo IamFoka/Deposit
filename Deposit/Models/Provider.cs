@@ -35,6 +35,9 @@ namespace Deposit.Models
 
         public void UpdateDocumentation(string name, string cnpj)
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Provider is deleted.");
+
             if (name != String.Empty)
                 Name = name;
 
@@ -45,6 +48,14 @@ namespace Deposit.Models
 
                 Cnpj = cnpj;
             }
+        }
+
+        public override void Delete()
+        {
+            if (IsDeleted)
+                throw new InvalidOperationException("Provider is already deleted.");
+
+            base.Delete();
         }
 
     }

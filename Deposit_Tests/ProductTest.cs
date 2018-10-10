@@ -83,7 +83,7 @@ namespace Deposit_Tests
         }
 
         [Fact]
-        public void Up()
+        public void UpdatePrice_ZeroPrice_ExceptionThrown()
         {
             // arrange
             var dimensions = Dimensions.MakeDimensions(11, 12, 13);
@@ -244,7 +244,7 @@ namespace Deposit_Tests
         }
 
         [Fact]
-        public void ProductDelete()
+        public void DeleteProduct_ValidProduct_ProductDeleted()
         {
             // arrange 
             var dimensions = Dimensions.MakeDimensions(11, 12, 13);
@@ -256,6 +256,18 @@ namespace Deposit_Tests
             // assert
             Assert.True(product.IsDeleted);
 
+        }
+
+        [Fact]
+        public void DeleteProduct_DeletedProduct_ExceptionThrown()
+        {
+            // arrange 
+            var dimensions = Dimensions.MakeDimensions(11, 12, 13);
+            var product = Product.MakeProduct("Test", "Test product", 50, dimensions);
+            product.Delete();
+
+            // act
+            var e = Assert.Throws<InvalidOperationException>(() => product.Delete());
         }
     }
 

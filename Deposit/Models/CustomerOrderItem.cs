@@ -54,6 +54,9 @@ namespace Deposit.Models
 
         public void ChangeAmount(float amount)
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Order item is deleted.");
+
             if (amount <= 0)
                 throw new ArgumentException("Amount must be larger than 0.");
 
@@ -85,6 +88,9 @@ namespace Deposit.Models
 
         public void ChangePrice(float price)
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Order item is deleted.");
+
             if (price <= 0)
                 throw new ArgumentException("Price must be larger than 0.");
 
@@ -101,6 +107,9 @@ namespace Deposit.Models
 
         public override void Delete()
         {
+            if (IsDeleted)
+                throw new InvalidOperationException("Order item is already deleted.");
+
             var deletedMovementItem = CustomerDeposit.MakeCustomerDeposit(this, Amount, DepositMovement.In);
             Deposits.Add(deletedMovementItem);
 
