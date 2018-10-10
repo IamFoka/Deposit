@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Deposit.Services;
 using Deposit.Models;
+using Deposit.Views;
 
 namespace Deposit.Controllers
 {
@@ -14,7 +15,7 @@ namespace Deposit.Controllers
     public class ProductsController : ControllerBase
     {
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(List<Product>))]
+        [ProducesResponseType(200, Type = typeof(List<ProductView>))]
         [ProducesResponseType(404)]
         public IActionResult GetAllProducts()
         {
@@ -29,7 +30,7 @@ namespace Deposit.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(200, Type = typeof(Product))]
+        [ProducesResponseType(200, Type = typeof(ProductView))]
         [ProducesResponseType(404)]
         public IActionResult GetProduct(Guid id)
         {
@@ -44,7 +45,7 @@ namespace Deposit.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(201, Type = typeof(Product))]
+        [ProducesResponseType(201, Type = typeof(ProductView))]
         [ProducesResponseType(400)]
         public IActionResult CreateProduct([FromBody] ProductDto productDto)
         {

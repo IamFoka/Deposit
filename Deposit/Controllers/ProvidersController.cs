@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Deposit.Services;
 using Deposit.Models;
+using Deposit.Views;
 
 namespace Deposit.Controllers
 {
@@ -14,7 +15,7 @@ namespace Deposit.Controllers
     public class ProvidersController : ControllerBase
     {
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(List<Provider>))]
+        [ProducesResponseType(200, Type = typeof(List<ProviderView>))]
         [ProducesResponseType(404)]
         public IActionResult GetProviders()
         {
@@ -29,7 +30,7 @@ namespace Deposit.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(200, Type = typeof(Provider))]
+        [ProducesResponseType(200, Type = typeof(ProviderView))]
         [ProducesResponseType(404)]
         public IActionResult GetProvider(Guid id)
         {
@@ -44,7 +45,7 @@ namespace Deposit.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(201, Type = typeof(Provider))]
+        [ProducesResponseType(201, Type = typeof(ProviderView))]
         [ProducesResponseType(400)]
         public IActionResult CreateProvider([FromBody] ProviderDto dto)
         {

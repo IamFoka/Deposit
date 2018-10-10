@@ -4,26 +4,49 @@ using System.Linq;
 using System.Threading.Tasks;
 using Deposit.Controllers;
 using Deposit.Models;
+using Deposit.Views;
 
 namespace Deposit.Services
 {
     public class ProviderServices
     {
-        public List<Provider> GetAllProviders(IRepository<Provider> repository)
+        public List<ProviderView> GetAllProviders(IRepository<Provider> repository)
         {
-            return repository.ReadAll();
+            var providers = repository.ReadAll();
+            var providersView = new List<ProviderView>();
+            
+            foreach (var i in providers)
+                providersView.Add(new ProviderView()
+                {
+                    Id = i.Id,
+                    Cnpj = i.Cnpj,
+                    Name = i.Name
+                });
+
+            return providersView;
         }
 
-        public Provider GetProvider(IRepository<Provider> repository, Guid id)
+        public ProviderView GetProvider(IRepository<Provider> repository, Guid id)
         {
-            return repository.Read(id);
+            var provider = repository.Read(id);
+            return new ProviderView()
+            {
+                Id = provider.Id,
+                Cnpj = provider.Cnpj,
+                Name = provider.Name
+            };
         }
 
-        public Provider CreateProvider(IRepository<Provider> repository, ProviderDto providerDto)
+        public ProviderView CreateProvider(IRepository<Provider> repository, ProviderDto providerDto)
         {
             var provider = Provider.MakeProvider(providerDto.Name, providerDto.Cnpj);
             repository.Add(provider);
-            return provider;
+            return new ProviderView()
+            {
+                Id = provider.Id,
+                Cnpj = provider.Cnpj,
+                Name = provider.Name
+            };
         }
 
         public void DeleteProvider(IRepository<Provider> repository, Guid id)
