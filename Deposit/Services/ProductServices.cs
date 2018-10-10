@@ -4,27 +4,56 @@ using System.Linq;
 using System.Threading.Tasks;
 using Deposit.Controllers;
 using Deposit.Models;
+using Deposit.Views;
 
 namespace Deposit.Services
 {
     public class ProductServices
     {
-        public List<Product> GetAllProducts(IRepository<Product> repository)
+        public List<ProductView> GetAllProducts(IRepository<Product> repository)
         {
-            return repository.ReadAll();
+            var products = repository.ReadAll();
+            var productsView = new List<ProductView>();
+            
+            foreach (var i in products)
+                productsView.Add(new ProductView()
+                {
+                    Id = i.Id,
+                    Amount = i.Amount,
+                    Description = i.Description,
+                    Price = i.Price,
+                    Sku = i.Sku
+                });
+
+            return productsView;
         }
 
-        public Product GetProduct(IRepository<Product> repository, Guid id)
+        public ProductView GetProduct(IRepository<Product> repository, Guid id)
         {
-            return repository.Read(id);
+            var product = repository.Read(id);
+            return new ProductView()
+            {
+                Id = product.Id,
+                Amount = product.Amount,
+                Description = product.Description,
+                Price = product.Price,
+                Sku = product.Sku
+            };
         }
 
-        public Product CreateProduct(IRepository<Product> repository, ProductDto productDto)
+        public ProductView CreateProduct(IRepository<Product> repository, ProductDto productDto)
         {
             var dimensions = Dimensions.MakeDimensions(productDto.Dimensions.Width, productDto.Dimensions.Height, productDto.Dimensions.Depth);
             var product = Product.MakeProduct(productDto.Name, productDto.Description, productDto.Price, dimensions);
             repository.Add(product);
-            return product;
+            return new ProductView()
+            {
+                Id = product.Id,
+                Amount = product.Amount,
+                Description = product.Description,
+                Price = product.Price,
+                Sku = product.Sku
+            };
         }
 
         public void DeleteProduct(IRepository<Product> repository, Guid id)
