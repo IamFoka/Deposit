@@ -10,7 +10,7 @@ using Deposit.Views;
 
 namespace Deposit.Controllers
 {
-    [Route("deposit/customers/orders")]
+    [Route("deposit/customer-orders")]
     [ApiController]
     public class CustomerOrdersController : ControllerBase
     {

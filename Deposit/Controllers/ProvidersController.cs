@@ -104,21 +104,37 @@ namespace Deposit.Controllers
             }
         }
 
-        [HttpGet("{id}/orders")]
+        [HttpGet("orders")]
+        [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult GetProviderOrders(Guid id)
+        public IActionResult GetProviderOrders()
         {
             var repository = new ProviderRepository();
             var orderRepository = new ProviderOrderRepository();
-
             var services = new ProviderServices();
 
-            var provider = services.GetProvider(repository, id);
+            var providers = services.GetAllOrders(repository, orderRepository);
 
-            if (provider == null)
+            if (providers.Count == 0)
                 return NotFound();
 
-            return NotFound(); // @TODO ver como serializar isso pra json
+            return Ok(providers);
+        }
+
+        [HttpGet("{id}/orders")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetProviderOrders(Guid id)
+        {
+            var repository = new ProviderOrderRepository();
+            var services = new ProviderOrderServices();
+
+            var orders = services.GetAllOrders(repository, id);
+
+            if (orders.Count == 0)
+                return NotFound();
+
+            return Ok(orders);
         }
     }
 }

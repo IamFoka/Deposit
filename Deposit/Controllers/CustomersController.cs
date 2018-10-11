@@ -102,22 +102,37 @@ namespace Deposit.Controllers
                 return BadRequest(e.Message);
             }
         }
+        
+        [HttpGet("orders")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetCustomerOrders()
+        {
+            var repository = new CustomerRepository();
+            var orderRepository = new CustomerOrderRepository();
+            var services = new CustomerServices();
+
+            var customers = services.GetAllOrders(repository, orderRepository);
+
+            if (customers.Count == 0)
+                return NotFound();
+
+            return Ok(customers);
+        }
 
         [HttpGet("{id}/orders")]
         [ProducesResponseType(404)]
         public IActionResult GetCustomerOrders(Guid id)
         {
-            var customerRepository = new CustomerRepository();
-            var customerOrderRepository = new CustomerOrderRepository();
+            var repository = new CustomerOrderRepository();
+            var services = new CustomerOrderServices();
 
-            var customerServices = new CustomerServices();
+            var orders = services.GetAllOrders(repository, id);
 
-            var customer = customerServices.GetCustomer(customerRepository, id);
-
-            if (customer == null)
+            if (orders.Count == 0)
                 return NotFound();
 
-            return NotFound(); // @TODO ver como serializar isso pra json
+            return Ok(orders);
         }
     }
 }

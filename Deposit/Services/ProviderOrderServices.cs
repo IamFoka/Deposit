@@ -32,6 +32,29 @@ namespace Deposit.Services
 
             return ordersView;
         }
+        
+        public List<ProviderOrderView> GetAllOrders(IRepository<ProviderOrder> repository, Guid providerId)
+        {
+            var orders = repository.ReadAll();
+            var ordersView = new List<ProviderOrderView>();
+            
+            foreach (var i in orders.Where(ord => ord.ProviderId == providerId))
+                ordersView.Add(new ProviderOrderView()
+                {
+                    Id = i.Id,
+                    Provider = new ProviderView()
+                    {
+                        Cnpj = i.Provider.Cnpj,
+                        Id = i.Provider.Id,
+                        Name = i.Provider.Name
+                    },
+                    RegisterDate = i.RegisterDate.ToShortDateString(),
+                    RegisterNumber = i.RegisterNumber,
+                    TotalValue = i.TotalValue
+                });
+
+            return ordersView;
+        }
 
         public ProviderOrderCompleteView GetOrder(IRepository<ProviderOrder> repository, Guid id)
         {
