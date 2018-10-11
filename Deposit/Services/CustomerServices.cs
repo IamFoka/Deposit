@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Deposit.Controllers;
 using Deposit.Models;
 using Deposit.Views;
 
@@ -22,6 +23,25 @@ namespace Deposit.Services
                     Id = i.Id,
                     Name = i.Name,
                     TotalSpent = i.TotalSpent
+                });
+
+            return customersView;
+        }
+
+        public List<CustomerView> GetTopCustomers(IRepository<Customer> repository)
+        {
+            var customers = repository.ReadAll().OrderByDescending(c => c.TotalSpent).ToList();
+            var customersView = new List<CustomerView>();
+            var total = (customers.Count < 10) ? customers.Count : 10; 
+            
+            for (var i = 0; i < total ; i++)
+                customersView.Add(new CustomerView()
+                {
+                    BirthDate = customers[i].BirthDate.ToShortDateString(),
+                    Cpf = customers[i].Cpf,
+                    Id = customers[i].Id,
+                    Name = customers[i].Name,
+                    TotalSpent = customers[i].TotalSpent
                 });
 
             return customersView;

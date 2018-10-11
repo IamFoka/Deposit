@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Deposit.Services;
 using Deposit.Models;
+using Deposit.Views;
 
 namespace Deposit.Controllers
 {
@@ -121,6 +122,7 @@ namespace Deposit.Controllers
         }
 
         [HttpGet("{id}/orders")]
+        [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public IActionResult GetCustomerOrders(Guid id)
         {
@@ -133,6 +135,22 @@ namespace Deposit.Controllers
                 return NotFound();
 
             return Ok(orders);
+        }
+
+        [HttpGet("top-customers")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetTopCustomers()
+        {
+            var repository = new CustomerRepository();
+            var services = new CustomerServices();
+
+            var customers = services.GetTopCustomers(repository);
+
+            if (customers.Count == 0)
+                return NotFound();
+
+            return Ok(customers);
         }
     }
 }
