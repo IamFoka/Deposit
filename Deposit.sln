@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deposit", "Deposit\Deposit.csproj", "{4C63C897-5664-4460-8120-50ED78075B73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deposit.WebApi", "Deposit.WebApi\Deposit.WebApi.csproj", "{4C63C897-5664-4460-8120-50ED78075B73}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deposit_Tests", "Deposit_Tests\Deposit_Tests.csproj", "{C53C9A61-18EB-407A-83BD-3453348A5AE8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deposit.Domain", "Deposit.Domain\Deposit.Domain.csproj", "{231CAD89-9830-4A3D-A260-EE789628FBA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deposit.Data", "Deposit.Data\Deposit.Data.csproj", "{745182F2-EC9C-4772-91D9-816C6EEC6F3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deposit.Domain.Tests", "Deposit.Domain.Tests\Deposit.Domain.Tests.csproj", "{C7C90942-7F72-4976-8E70-636C45463918}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,18 @@ Global
 		{C53C9A61-18EB-407A-83BD-3453348A5AE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C53C9A61-18EB-407A-83BD-3453348A5AE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C53C9A61-18EB-407A-83BD-3453348A5AE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{231CAD89-9830-4A3D-A260-EE789628FBA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{231CAD89-9830-4A3D-A260-EE789628FBA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{231CAD89-9830-4A3D-A260-EE789628FBA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{231CAD89-9830-4A3D-A260-EE789628FBA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{745182F2-EC9C-4772-91D9-816C6EEC6F3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{745182F2-EC9C-4772-91D9-816C6EEC6F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{745182F2-EC9C-4772-91D9-816C6EEC6F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{745182F2-EC9C-4772-91D9-816C6EEC6F3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7C90942-7F72-4976-8E70-636C45463918}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7C90942-7F72-4976-8E70-636C45463918}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7C90942-7F72-4976-8E70-636C45463918}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7C90942-7F72-4976-8E70-636C45463918}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
