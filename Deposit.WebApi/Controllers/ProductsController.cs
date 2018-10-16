@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Deposit.Data.Interfaces;
 using Deposit.Views;
 using Deposit.WebApi.Dtos;
 using Deposit.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Deposit.Data.Repositories;
+using Deposit.Domain.Entities;
 
 namespace Deposit.WebApi.Controllers
 {
@@ -12,14 +14,20 @@ namespace Deposit.WebApi.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
+        private readonly IRepository<Product> _repository;
+
+        public ProductsController(IRepository<Product> repository)
+        {
+            _repository = repository;
+        }
+        
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(List<ProductView>))]
         [ProducesResponseType(404)]
         public IActionResult GetAllProducts()
         {
-            var productRepository = new ProductRepository();
             var productServices = new ProductServices();
-            var products = productServices.GetAllProducts(productRepository);
+            var products = productServices.GetAllProducts(_repository);
 
             if (products.Count == 0)
                 return NotFound();
@@ -32,9 +40,8 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetProduct(Guid id)
         {
-            var productRepository = new ProductRepository();
             var productServices = new ProductServices();
-            var product = productServices.GetProduct(productRepository, id);
+            var product = productServices.GetProduct(_repository, id);
 
             if (product == null)
                 return NotFound();
@@ -47,12 +54,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateProduct([FromBody] ProductDto productDto)
         {
-            var productRepository = new ProductRepository();
             var productServices = new ProductServices();
 
             try
             {
-                return Ok(productServices.CreateProduct(productRepository, productDto));
+                return Ok(productServices.CreateProduct(_repository, productDto));
             }
             catch (ArgumentException e)
             {
@@ -65,12 +71,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult DeleteProduct(Guid id)
         {
-            var productRepository = new ProductRepository();
             var productServices = new ProductServices();
 
             try
             {
-                productServices.DeleteProduct(productRepository, id);
+                productServices.DeleteProduct(_repository, id);
                 return Ok();
             }
             catch (ArgumentException)
@@ -85,12 +90,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateCustomer(Guid id, [FromBody] ProductDto productDto)
         {
-            var productRepository = new ProductRepository();
             var productServices = new ProductServices();
 
             try
             {
-                productServices.UpdateProduct(productRepository, id, productDto);
+                productServices.UpdateProduct(_repository, id, productDto);
                 return Ok();
             }
             catch (ArgumentException e)

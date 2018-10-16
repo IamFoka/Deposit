@@ -12,28 +12,24 @@ namespace Deposit.WebApi.Services
     {
         public List<ProviderView> GetAllProviders(IRepository<Provider> repository)
         {
-            var providers = repository.ReadAll();
-            var providersView = new List<ProviderView>();
-            
-            foreach (var i in providers)
-                providersView.Add(new ProviderView()
-                {
-                    Id = i.Id,
-                    Cnpj = i.Cnpj,
-                    Name = i.Name
-                });
+            var providers = repository.ListAll();
 
-            return providersView;
+            return providers.Select(i => new ProviderView()
+            {
+                Id = i.Id,
+                Cnpj = i.Cnpj,
+                Name = i.Name
+            }).ToList();
         }
 
         public List<ProviderWithOrdersView> GetAllOrders(IRepository<Provider> repository, IRepository<ProviderOrder> orderRepository)
         {
-            var providers = repository.ReadAll();
+            var providers = repository.ListAll();
             var providersView = new List<ProviderWithOrdersView>();
 
             foreach (var i in providers)
             {
-                var orders = orderRepository.ReadAll();
+                var orders = orderRepository.ListAll();
                 var ordersView = orders.Where(ord => ord.ProviderId == i.Id).
                     Select(o => new ProviderWithOrdersView.SimpleProviderOrderView()
                     {
@@ -57,7 +53,11 @@ namespace Deposit.WebApi.Services
 
         public ProviderView GetProvider(IRepository<Provider> repository, Guid id)
         {
-            var provider = repository.Read(id);
+            var provider = repository.ListAll().FirstOrDefault(p => p.Id == id);
+
+            if (provider == null)
+                return null;
+            
             return new ProviderView()
             {
                 Id = provider.Id,
@@ -85,13 +85,13 @@ namespace Deposit.WebApi.Services
 
         public void UpdateProvider(IRepository<Provider> repository, Guid id, ProviderDto providerDto)
         {
-            var provider = repository.Read(id);
+            var provider = repository.ListAll().FirstOrDefault(p => p.Id == id);
 
             if (provider == null)
                 throw new ArgumentException("Customer not found.");
             
             provider.UpdateDocumentation(providerDto.Name, providerDto.Cnpj);
-            repository.Update(id, provider);
+            repository.Update(provider);
         }
     }
 }

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Deposit.Data.Interfaces;
 using Deposit.Views;
 using Deposit.WebApi.Dtos;
 using Deposit.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Deposit.Data.Repositories;
+using Deposit.Domain.Entities;
 
 namespace Deposit.WebApi.Controllers
 {
@@ -12,14 +13,24 @@ namespace Deposit.WebApi.Controllers
     [ApiController]
     public class CustomerOrdersController : ControllerBase
     {
+        private readonly IRepository<CustomerOrder> _repository;
+        private readonly IRepository<Product> _productRepository;
+        private readonly IRepository<Customer> _customerRepository;
+
+        public CustomerOrdersController(IRepository<CustomerOrder> repository, IRepository<Product> productRepository, IRepository<Customer> customerRepository)
+        {
+            _repository = repository;
+            _productRepository = productRepository;
+            _customerRepository = customerRepository;
+        }
+
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(List<CustomerOrderView>))]
         [ProducesResponseType(404)]
         public IActionResult GetCustomerOrders()
         {
-            var customerOrderRepository = new CustomerOrderRepository();
             var customerOrderServices = new CustomerOrderServices();
-            var customerOrders = customerOrderServices.GetAllOrders(customerOrderRepository);
+            var customerOrders = customerOrderServices.GetAllOrders(_repository);
 
             if (customerOrders == null)
                 return NotFound();
@@ -32,9 +43,8 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetCustomerOrder(Guid id)
         {
-            var customerOrderRepository = new CustomerOrderRepository();
             var customerOrderServices = new CustomerOrderServices();
-            var customerOrder = customerOrderServices.GetOrder(customerOrderRepository, id);
+            var customerOrder = customerOrderServices.GetOrder(_repository, id);
 
             if (customerOrder == null)
                 return NotFound();
@@ -47,14 +57,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateCustomerOrder([FromBody] CustomerOrderDto dto)
         {
-            var customerOrderRepository = new CustomerOrderRepository();
-            var customerRepository = new CustomerRepository();
-            var productRepository = new ProductRepository();
             var customerOrderServices = new CustomerOrderServices();
 
             try
             {
-                return Ok(customerOrderServices.CreateOrder(customerOrderRepository, customerRepository, productRepository, dto));
+                return Ok(customerOrderServices.CreateOrder(_repository, _customerRepository, _productRepository, dto));
             }
             catch (ArgumentException e)
             {
@@ -67,12 +74,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(400)]
         public IActionResult DeleteCostumerOrder(Guid id)
         {
-            var customerOrderRepository = new CustomerOrderRepository();
             var customerOrderServices = new CustomerOrderServices();
 
             try
             {
-                customerOrderServices.DeleteCustomerOrder(customerOrderRepository, id);
+                customerOrderServices.DeleteCustomerOrder(_repository, id);
                 return Ok();
             }
             catch (ArgumentException e)

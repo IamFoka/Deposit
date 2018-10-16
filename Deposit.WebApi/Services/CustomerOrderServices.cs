@@ -12,11 +12,9 @@ namespace Deposit.WebApi.Services
     {
         public List<CustomerOrderView> GetAllOrders(IRepository<CustomerOrder> repository)
         {
-            var orders = repository.ReadAll();
-            var ordersView = new List<CustomerOrderView>();
-            
-            foreach (var i in orders)
-                ordersView.Add(new CustomerOrderView()
+            var orders = repository.ListAll();
+
+            return orders.Select(i => new CustomerOrderView()
                 {
                     Customer = new CustomerView()
                     {
@@ -30,18 +28,16 @@ namespace Deposit.WebApi.Services
                     RegisterDate = i.RegisterDate.ToShortDateString(),
                     RegisterNumber = i.RegisterNumber,
                     TotalValue = i.TotalValue
-                });
-
-            return ordersView;
+                })
+                .ToList();
         }
         
         public List<CustomerOrderView> GetAllOrders(IRepository<CustomerOrder> repository, Guid customerId)
         {
-            var orders = repository.ReadAll();
-            var ordersView = new List<CustomerOrderView>();
-            
-            foreach (var i in orders.Where(ord => ord.CustomerId == customerId))
-                ordersView.Add(new CustomerOrderView()
+            var orders = repository.ListAll();
+
+            return orders.Where(ord => ord.CustomerId == customerId)
+                .Select(i => new CustomerOrderView()
                 {
                     Customer = new CustomerView()
                     {
@@ -55,18 +51,19 @@ namespace Deposit.WebApi.Services
                     RegisterDate = i.RegisterDate.ToShortDateString(),
                     RegisterNumber = i.RegisterNumber,
                     TotalValue = i.TotalValue
-                });
-
-            return ordersView;
+                })
+                .ToList();
         }
 
         public CustomerOrderCompleteView GetOrder(IRepository<CustomerOrder> repository, Guid id)
         {
-            var order = repository.Read(id);
-            var items = new List<CustomerOrderItemView>();
-            
-            foreach (var i in order.CustomerOrderItems)
-                items.Add(new CustomerOrderItemView()
+            var order = repository.ListAll().FirstOrDefault(o => o.Id == id);
+
+            if (order == null)
+                return null;
+
+            var items = order.CustomerOrderItems
+                .Select(i => new CustomerOrderItemView()
                 {
                     Amount = i.Amount,
                     Id = i.ProductId,
@@ -74,7 +71,9 @@ namespace Deposit.WebApi.Services
                     Product = i.Product.Name,
                     ProductId = i.ProductId,
                     TotalValue = i.TotalValue
-                });
+                })
+                .ToList();
+                
             
             return new CustomerOrderCompleteView()
             {
@@ -97,7 +96,7 @@ namespace Deposit.WebApi.Services
         public CustomerOrderCompleteView CreateOrder(IRepository<CustomerOrder> repository, 
             IRepository<Customer> customerRepository, IRepository<Product> productRepository, CustomerOrderDto dto)
         {
-            var customer = customerRepository.Read(dto.CustomerId);
+            var customer = customerRepository.ListAll().FirstOrDefault(c => c.Id == dto.CustomerId);
             
             if (customer == null)
                 throw new ArgumentException("Customer not found.");
@@ -107,7 +106,7 @@ namespace Deposit.WebApi.Services
 
             foreach (var i in dto.Items)
             {
-                var product = productRepository.Read(i.ProductId);
+                var product = productRepository.ListAll().FirstOrDefault(p => p.Id == i.ProductId);
                 
                 if (product == null)
                     throw new ArgumentException("Product not found.");

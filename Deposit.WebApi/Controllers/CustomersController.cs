@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Deposit.Data.Interfaces;
 using Deposit.WebApi.Dtos;
 using Deposit.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -12,14 +13,22 @@ namespace Deposit.WebApi.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
+        private readonly IRepository<Customer> _repository;
+        private readonly IRepository<CustomerOrder> _orderRepository;
+
+        public CustomersController(IRepository<Customer> repository, IRepository<CustomerOrder> orderRepository)
+        {
+            _repository = repository;
+            _orderRepository = orderRepository;
+        }
+
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(List<Customer>))]
         [ProducesResponseType(404)]
         public IActionResult GetAllCustomers()
         {
-            var customerRepository = new CustomerRepository();
             var customerServices = new CustomerServices();
-            var customers = customerServices.GetAllCustomers(customerRepository);
+            var customers = customerServices.GetAllCustomers(_repository);
 
             if (customers.Count == 0)
                 return NotFound();
@@ -32,9 +41,8 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetCustomer(Guid id)
         {
-            var customerRepository = new CustomerRepository();
             var customerServices = new CustomerServices();
-            var customer = customerServices.GetCustomer(customerRepository, id);
+            var customer = customerServices.GetCustomer(_repository, id);
 
             if (customer == null)
                 return NotFound();
@@ -47,12 +55,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateCustomer([FromBody] CustomerDto customerDto)
         {
-            var customerRepository = new CustomerRepository();
             var customerServices = new CustomerServices();
 
             try
             {
-                return Ok(customerServices.CreateCustomer(customerRepository, customerDto.Name, customerDto.Cpf, customerDto.BirthDate));
+                return Ok(customerServices.CreateCustomer(_repository, customerDto.Name, customerDto.Cpf, customerDto.BirthDate));
             }
             catch (ArgumentException e)
             {
@@ -65,12 +72,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult DeleteCustomer(Guid id)
         {
-            var customerRepository = new CustomerRepository();
             var customerServices = new CustomerServices();
             
             try
             {
-                customerServices.DeleteCustomer(customerRepository, id);
+                customerServices.DeleteCustomer(_repository, id);
                 return Ok();
             }
             catch (ArgumentException)
@@ -85,12 +91,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateCustomer(Guid id, [FromBody] CustomerDto dto)
         {
-            var customerRepository = new CustomerRepository();
             var customerServices = new CustomerServices();
 
             try
             {
-                customerServices.UpdateCustomer(customerRepository, id, dto.Name, dto.Cpf);
+                customerServices.UpdateCustomer(_repository, id, dto.Name, dto.Cpf);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -107,11 +112,9 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetCustomerOrders()
         {
-            var repository = new CustomerRepository();
-            var orderRepository = new CustomerOrderRepository();
             var services = new CustomerServices();
 
-            var customers = services.GetAllOrders(repository, orderRepository);
+            var customers = services.GetAllOrders(_repository, _orderRepository);
 
             if (customers.Count == 0)
                 return NotFound();
@@ -124,10 +127,9 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetCustomerOrders(Guid id)
         {
-            var repository = new CustomerOrderRepository();
             var services = new CustomerOrderServices();
 
-            var orders = services.GetAllOrders(repository, id);
+            var orders = services.GetAllOrders(_orderRepository, id);
 
             if (orders.Count == 0)
                 return NotFound();
@@ -140,10 +142,9 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetTopCustomers()
         {
-            var repository = new CustomerRepository();
             var services = new CustomerServices();
 
-            var customers = services.GetTopCustomers(repository);
+            var customers = services.GetTopCustomers(_repository);
 
             if (customers.Count == 0)
                 return NotFound();

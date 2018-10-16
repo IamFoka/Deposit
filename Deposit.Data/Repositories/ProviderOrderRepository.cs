@@ -8,47 +8,47 @@ namespace Deposit.Data.Repositories
 {
     public class ProviderOrderRepository : IRepository<ProviderOrder>
     {
-        private static List<ProviderOrder> ProviderOrders { get; set; }
+        private readonly DepositDbContext _context;
 
-        public ProviderOrderRepository()
+        public ProviderOrderRepository(DepositDbContext context)
         {
-            if (ProviderOrders == null)
-                ProviderOrders = new List<ProviderOrder>();
+            _context = context;
         }
 
         public void Add(ProviderOrder providerOrder)
         {
-            ProviderOrders.Add(providerOrder);
+            _context.ProviderOrders.Add(providerOrder);
+            _context.SaveChanges();
 
-            if (providerOrder.ProviderOrderItems.Count != 0)
-            {
-                var providerOrderItemRepository = new ProviderOrderItemRepository();
+            if (providerOrder.ProviderOrderItems.Count == 0)
+                return;
+            
+            var providerOrderItemRepository = new ProviderOrderItemRepository(_context);
 
-                foreach (var providerOrderItem in providerOrder.ProviderOrderItems)
-                    providerOrderItemRepository.Add(providerOrderItem);
-            }
+            foreach (var providerOrderItem in providerOrder.ProviderOrderItems)
+                providerOrderItemRepository.Add(providerOrderItem);
         }
 
-        public ProviderOrder Read(Guid guid)
+        public IEnumerable<ProviderOrder> ListAll()
         {
-            return ProviderOrders.FirstOrDefault(c => c.Id == guid);
+            return _context.ProviderOrders.AsEnumerable();
         }
 
-        public void Update(Guid guid, ProviderOrder t)
+        public void Update(ProviderOrder entity)
         {
-
+            _context.ProviderOrders.Update(entity);
+            _context.SaveChanges();
         }
 
         public void Delete(Guid guid)
         {
-            var providerOrder = Read(guid);
+            var providerOrder = ListAll().FirstOrDefault(o => o.Id == guid);
+            
+            if (providerOrder == null)
+                throw new ArgumentException("Provider order not found.");
 
             providerOrder.Delete();
-        }
-
-        public List<ProviderOrder> ReadAll()
-        {
-            return new List<ProviderOrder>(ProviderOrders);
+            _context.SaveChanges();
         }
     }
 }

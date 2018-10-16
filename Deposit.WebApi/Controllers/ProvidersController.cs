@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Deposit.Data.Interfaces;
 using Deposit.Views;
 using Deposit.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Deposit.Data.Repositories;
+using Deposit.Domain.Entities;
 using Deposit.WebApi.Dtos;
 
 namespace Deposit.WebApi.Controllers
@@ -12,14 +14,22 @@ namespace Deposit.WebApi.Controllers
     [ApiController]
     public class ProvidersController : ControllerBase
     {
+        private readonly IRepository<Provider> _repository;
+        private readonly IRepository<ProviderOrder> _orderRepository;
+
+        public ProvidersController(IRepository<Provider> repository, IRepository<ProviderOrder> orderRepository)
+        {
+            _repository = repository;
+            _orderRepository = orderRepository;
+        }
+
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(List<ProviderView>))]
         [ProducesResponseType(404)]
         public IActionResult GetProviders()
         {
-            var repository = new ProviderRepository();
             var services = new ProviderServices();
-            var providers = services.GetAllProviders(repository);
+            var providers = services.GetAllProviders(_repository);
 
             if (providers.Count == 0)
                 return NotFound();
@@ -32,9 +42,8 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetProvider(Guid id)
         {
-            var repository = new ProviderRepository();
             var services = new ProviderServices();
-            var provider = services.GetProvider(repository, id);
+            var provider = services.GetProvider(_repository, id);
 
             if (provider == null)
                 return NotFound();
@@ -47,12 +56,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateProvider([FromBody] ProviderDto dto)
         {
-            var repository = new ProviderRepository();
             var services = new ProviderServices();
 
             try
             {
-                return Ok(services.CreateProvider(repository, dto));
+                return Ok(services.CreateProvider(_repository, dto));
             }
             catch (ArgumentException e)
             {
@@ -65,12 +73,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult DeleteProvider(Guid id)
         {
-            var repository = new ProviderRepository();
             var services = new ProviderServices();
             
             try
             {
-                services.DeleteProvider(repository, id);
+                services.DeleteProvider(_repository, id);
                 return Ok();
             }
             catch (ArgumentException)
@@ -85,12 +92,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateProvider(Guid id, [FromBody] ProviderDto dto)
         {
-            var repository = new ProviderRepository();
             var services = new ProviderServices();
 
             try
             {
-                services.UpdateProvider(repository, id, dto);
+                services.UpdateProvider(_repository, id, dto);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -107,11 +113,9 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetProviderOrders()
         {
-            var repository = new ProviderRepository();
-            var orderRepository = new ProviderOrderRepository();
             var services = new ProviderServices();
 
-            var providers = services.GetAllOrders(repository, orderRepository);
+            var providers = services.GetAllOrders(_repository, _orderRepository);
 
             if (providers.Count == 0)
                 return NotFound();
@@ -124,10 +128,9 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetProviderOrders(Guid id)
         {
-            var repository = new ProviderOrderRepository();
             var services = new ProviderOrderServices();
 
-            var orders = services.GetAllOrders(repository, id);
+            var orders = services.GetAllOrders(_orderRepository, id);
 
             if (orders.Count == 0)
                 return NotFound();

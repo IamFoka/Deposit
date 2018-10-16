@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Deposit.Views;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
@@ -11,11 +12,9 @@ namespace Deposit.WebApi.Services
     {
         public List<ProductView> GetAllProducts(IRepository<Product> repository)
         {
-            var products = repository.ReadAll();
-            var productsView = new List<ProductView>();
-            
-            foreach (var i in products)
-                productsView.Add(new ProductView()
+            var products = repository.ListAll();
+
+            return products.Select(i => new ProductView()
                 {
                     Id = i.Id,
                     Amount = i.Amount,
@@ -23,14 +22,17 @@ namespace Deposit.WebApi.Services
                     Name = i.Name,
                     Price = i.Price,
                     Sku = i.Sku
-                });
-
-            return productsView;
+                })
+                .ToList();
         }
 
         public ProductView GetProduct(IRepository<Product> repository, Guid id)
         {
-            var product = repository.Read(id);
+            var product = repository.ListAll().FirstOrDefault(p => p.Id == id);
+
+            if (product == null)
+                return null;
+            
             return new ProductView()
             {
                 Id = product.Id,
@@ -65,7 +67,7 @@ namespace Deposit.WebApi.Services
 
         public void UpdateProduct(IRepository<Product> repository, Guid id, ProductDto productDto)
         {
-            var product = repository.Read(id);
+            var product = repository.ListAll().FirstOrDefault(p => p.Id == id);
             
             if (product == null)
                 throw new ArgumentException("Product not found.");
@@ -79,7 +81,7 @@ namespace Deposit.WebApi.Services
             if (productDto.Dimensions != null)
                 product.Redimension(productDto.Dimensions.Width, productDto.Dimensions.Height, productDto.Dimensions.Depth);
             
-            repository.Update(id, product);
+            repository.Update(product);
         }
     }
 }

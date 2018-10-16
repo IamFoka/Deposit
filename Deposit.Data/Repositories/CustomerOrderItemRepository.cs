@@ -3,51 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Deposit.Data.Repositories
 {
     public class CustomerOrderItemRepository : IRepository<CustomerOrderItem>
     {
-        private static List<CustomerOrderItem> CustomerOrderItems { get; set; }
-        private static List<CustomerDeposit> CustomerDeposits { get; set; }
+        private readonly DepositDbContext _context;
 
-        public CustomerOrderItemRepository()
+        public CustomerOrderItemRepository(DepositDbContext context)
         {
-            if (CustomerOrderItems == null)
-                CustomerOrderItems = new List<CustomerOrderItem>();
-
-            if (CustomerDeposits == null)
-                CustomerDeposits = new List<CustomerDeposit>();
+            _context = context;
         }
 
         public void Add(CustomerOrderItem customerOrderItem)
         {
-            CustomerOrderItems.Add(customerOrderItem);
+            _context.CustomerOrderItems.Add(customerOrderItem);
 
             foreach (var customerDeposit in customerOrderItem.Deposits)
-                CustomerDeposits.Add(customerDeposit);
+                _context.CustomerDeposits.Add(customerDeposit);
+
+            _context.SaveChanges();
         }
 
-        public CustomerOrderItem Read(Guid guid)
+        public IEnumerable<CustomerOrderItem> ListAll()
         {
-            return CustomerOrderItems.FirstOrDefault(c => c.Id == guid);
+            return _context.CustomerOrderItems.AsEnumerable();
         }
 
-        public void Update(Guid guid, CustomerOrderItem t)
+        public void Update(CustomerOrderItem entity)
         {
-
+            _context.CustomerOrderItems.Update(entity);
+            _context.SaveChanges();
+            // @TODO ver o que acontece quando tem um deposit novo
         }
 
         public void Delete(Guid guid)
         {
-            var customerItemOrder = Read(guid);
+            var customerItemOrder = ListAll().FirstOrDefault(i => i.Id == guid);
 
             customerItemOrder.Delete();
-        }
-
-        public List<CustomerOrderItem> ReadAll()
-        {
-            return new List<CustomerOrderItem>(CustomerOrderItems);
+            Update(customerItemOrder);
         }
     }
 }

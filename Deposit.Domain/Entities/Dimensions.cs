@@ -13,15 +13,6 @@ namespace Deposit.Domain.Entities
 
         public static Dimensions MakeDimensions(int width, int height, int depth)
         {
-            var dimensions = new Dimensions();
-
-            dimensions.Rescale(width, height, depth);
-
-            return dimensions;
-        }
-
-        public void Rescale(int width, int height, int depth)
-        {
             if (height <= 0)
             {
                 throw new ArgumentException("Height must be larger than 0.");
@@ -37,10 +28,16 @@ namespace Deposit.Domain.Entities
                 throw new ArgumentException("Depth must be larger than 0.");
             }
 
-            Height = height;
-            Width = width;
-            Depth = depth;
+            var dimensions = new Dimensions {Height = height, Width = width, Depth = depth};
+
+            return dimensions;
         }
 
+        /*
+        public void Rescale(int width, int height, int depth)
+        {
+
+        }
+        */
     }
 }

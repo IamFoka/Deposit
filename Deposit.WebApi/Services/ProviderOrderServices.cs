@@ -12,57 +12,42 @@ namespace Deposit.WebApi.Services
     {
         public List<ProviderOrderView> GetAllOrders(IRepository<ProviderOrder> repository)
         {
-            var orders = repository.ReadAll();
-            var ordersView = new List<ProviderOrderView>();
-            
-            foreach (var i in orders)
-                ordersView.Add(new ProviderOrderView()
+            var orders = repository.ListAll();
+
+            return orders.Select(i => new ProviderOrderView()
                 {
                     Id = i.Id,
-                    Provider = new ProviderView()
-                    {
-                        Cnpj = i.Provider.Cnpj,
-                        Id = i.Provider.Id,
-                        Name = i.Provider.Name
-                    },
+                    Provider = new ProviderView() {Cnpj = i.Provider.Cnpj, Id = i.Provider.Id, Name = i.Provider.Name},
                     RegisterDate = i.RegisterDate.ToShortDateString(),
                     RegisterNumber = i.RegisterNumber,
                     TotalValue = i.TotalValue
-                });
-
-            return ordersView;
+                }).ToList();
         }
         
         public List<ProviderOrderView> GetAllOrders(IRepository<ProviderOrder> repository, Guid providerId)
         {
-            var orders = repository.ReadAll();
-            var ordersView = new List<ProviderOrderView>();
-            
-            foreach (var i in orders.Where(ord => ord.ProviderId == providerId))
-                ordersView.Add(new ProviderOrderView()
+            var orders = repository.ListAll();
+
+            return orders.Where(ord => ord.ProviderId == providerId)
+                .Select(i => new ProviderOrderView()
                 {
                     Id = i.Id,
-                    Provider = new ProviderView()
-                    {
-                        Cnpj = i.Provider.Cnpj,
-                        Id = i.Provider.Id,
-                        Name = i.Provider.Name
-                    },
+                    Provider = new ProviderView() {Cnpj = i.Provider.Cnpj, Id = i.Provider.Id, Name = i.Provider.Name},
                     RegisterDate = i.RegisterDate.ToShortDateString(),
                     RegisterNumber = i.RegisterNumber,
                     TotalValue = i.TotalValue
-                });
-
-            return ordersView;
+                }).ToList();
         }
 
         public ProviderOrderCompleteView GetOrder(IRepository<ProviderOrder> repository, Guid id)
         {
-            var order = repository.Read(id);
-            var items = new List<ProviderOrderItemView>();
-            
-            foreach (var i in order.ProviderOrderItems)
-                items.Add(new ProviderOrderItemView()
+            var order = repository.ListAll().FirstOrDefault(o => o.Id == id);
+
+            if (order == null)
+                return null;
+
+            var items = order.ProviderOrderItems
+                .Select(i => new ProviderOrderItemView()
                 {
                     Amount = i.Amount,
                     Id = i.Id,
@@ -70,7 +55,7 @@ namespace Deposit.WebApi.Services
                     Product = i.Product.Name,
                     ProductId = i.Product.Id,
                     TotalValue = i.TotalValue
-                });
+                }).ToList();
             
             return new ProviderOrderCompleteView()
             {
@@ -91,17 +76,16 @@ namespace Deposit.WebApi.Services
         public ProviderOrderCompleteView CreateOrder(IRepository<ProviderOrder> repository, 
             IRepository<Provider> providerRepository, IRepository<Product> productRepository, ProviderOrderDto dto)
         {
-            var provider = providerRepository.Read(dto.ProviderId);
+            var provider = providerRepository.ListAll().FirstOrDefault(p => p.Id == dto.ProviderId);
             
             if (provider == null)
                 throw new ArgumentException("Provider not found.");
 
             var order = ProviderOrder.MakeProviderOrder(dto.RegisterNumber, provider);
-            var items = new List<ProviderOrderItemView>();
 
             foreach (var i in dto.Items)
             {
-                var product = productRepository.Read(i.ProductId);
+                var product = productRepository.ListAll().FirstOrDefault(p => p.Id == i.ProductId);
                 
                 if (product == null)
                     throw new ArgumentException("Product not found.");
@@ -110,9 +94,9 @@ namespace Deposit.WebApi.Services
             }
             
             repository.Add(order);
-            
-            foreach (var i in order.ProviderOrderItems)
-                items.Add(new ProviderOrderItemView()
+
+            var items = order.ProviderOrderItems
+                .Select(i => new ProviderOrderItemView()
                 {
                     Amount = i.Amount,
                     Id = i.Id,
@@ -120,7 +104,7 @@ namespace Deposit.WebApi.Services
                     Product = i.Product.Name,
                     ProductId = i.Product.Id,
                     TotalValue = i.TotalValue
-                });
+                }).ToList();
             
             return new ProviderOrderCompleteView()
             {

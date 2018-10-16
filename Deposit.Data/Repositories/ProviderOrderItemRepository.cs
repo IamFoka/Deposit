@@ -8,46 +8,44 @@ namespace Deposit.Data.Repositories
 {
     public class ProviderOrderItemRepository : IRepository<ProviderOrderItem>
     {
-        private static List<ProviderOrderItem> ProviderOrderItems { get; set; }
-        private static List<ProviderDeposit> ProviderDeposits { get; set; }
+        private readonly DepositDbContext _context;
 
-        public ProviderOrderItemRepository()
+        public ProviderOrderItemRepository(DepositDbContext context)
         {
-            if (ProviderOrderItems == null)
-                ProviderOrderItems = new List<ProviderOrderItem>();
-
-            if (ProviderDeposits == null)
-                ProviderDeposits = new List<ProviderDeposit>();
+            _context = context;
         }
 
         public void Add(ProviderOrderItem providerOrderItem)
         {
-            ProviderOrderItems.Add(providerOrderItem);
+            _context.ProviderOrderItems.Add(providerOrderItem);
 
             foreach (var providerDeposit in providerOrderItem.Deposits)
-                ProviderDeposits.Add(providerDeposit);
+                _context.ProviderDeposits.Add(providerDeposit);
+
+            _context.SaveChanges();
         }
 
-        public ProviderOrderItem Read(Guid guid)
+        public IEnumerable<ProviderOrderItem> ListAll()
         {
-            return ProviderOrderItems.FirstOrDefault(c => c.Id == guid);
+            return _context.ProviderOrderItems.AsEnumerable();
         }
 
-        public void Update(Guid guid, ProviderOrderItem t)
+        public void Update(ProviderOrderItem entity)
         {
-
+            _context.ProviderOrderItems.Update(entity);
+            _context.SaveChanges();
+            // @TODO ver o que acontece quando tem um deposit novo
         }
 
         public void Delete(Guid guid)
         {
-            var providerOrderItem = Read(guid);
+            var providerOrderItem = ListAll().FirstOrDefault(i => i.Id == guid);
+            
+            if (providerOrderItem == null)
+                throw new ArgumentException("Provider order item not found.");
 
             providerOrderItem.Delete();
-        }
-
-        public List<ProviderOrderItem> ReadAll()
-        {
-            return new List<ProviderOrderItem>(ProviderOrderItems);
+            _context.SaveChanges();
         }
     }
 }

@@ -3,58 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Deposit.Data.Repositories
 {
     public class CustomerOrderRepository : IRepository<CustomerOrder>
     {
-        private static List<CustomerOrder> CustomerOrders { get; set; }
+        private readonly DepositDbContext _context;
 
-        public CustomerOrderRepository()
+        public CustomerOrderRepository(DepositDbContext context)
         {
-            if (CustomerOrders == null)
-                CustomerOrders = new List<CustomerOrder>();
+            _context = context;
         }
 
         public void Add(CustomerOrder customerOrder)
         {
-            CustomerOrders.Add(customerOrder);
+            _context.CustomerOrders.Add(customerOrder);
+            _context.SaveChanges();
 
-            if (customerOrder.CustomerOrderItems.Count != 0)
-            {
-                var customerOrderItemRepository = new CustomerOrderItemRepository();
+            if (customerOrder.CustomerOrderItems.Count == 0)
+                return;
 
-                foreach (var customerOrderItem in customerOrder.CustomerOrderItems)
-                    customerOrderItemRepository.Add(customerOrderItem);
-            }
+            var customerOrderItemRepository = new CustomerOrderItemRepository(_context);
+
+            foreach (var customerOrderItem in customerOrder.CustomerOrderItems)
+                customerOrderItemRepository.Add(customerOrderItem);
         }
 
-        public CustomerOrder Read(Guid guid)
+        public IEnumerable<CustomerOrder> ListAll()
         {
-            return CustomerOrders.FirstOrDefault(c => c.Id == guid && !c.IsDeleted);
+            return _context.CustomerOrders.AsEnumerable();
         }
 
-        public void Update(Guid guid, CustomerOrder t)
+        public void Update(CustomerOrder entity)
         {
-
+            _context.CustomerOrders.Update(entity);
+            _context.SaveChanges();
         }
 
         public void Delete(Guid guid)
         {
-            var customerOrder = Read(guid);
+            var customerOrder = ListAll().FirstOrDefault(o => o.Id == guid);
+
+            if (customerOrder == null)
+                throw new ArgumentException("Customer order not found.");
 
             customerOrder.Delete();
-        }
-
-        public List<CustomerOrder> ReadAll()
-        {
-            var l = new List<CustomerOrder>();
-
-            foreach (var i in CustomerOrders)
-                if (!i.IsDeleted)
-                    l.Add(i);
-
-            return l;
+            Update(customerOrder);
         }
     }
 }

@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Deposit.Data;
+using Deposit.Data.Interfaces;
+using Deposit.Data.Repositories;
+using Deposit.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
-namespace Deposit
+namespace Deposit.WebApi
 {
     public class Startup
     {
@@ -25,7 +23,19 @@ namespace Deposit
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<DepositDbContext>(
+                options => options.UseMySql("server=localhost;port=3306;database=deposit;uid=root;password=nautec@2018")
+            );
+            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddScoped<IRepository<Product>, ProductRepository>();
+            services.AddScoped<IRepository<Customer>, CustomerRepository>();
+            services.AddScoped<IRepository<CustomerOrder>, CustomerOrderRepository>();
+            services.AddScoped<IRepository<CustomerOrderItem>, CustomerOrderItemRepository>();
+            services.AddScoped<IRepository<Provider>, ProviderRepository>();
+            services.AddScoped<IRepository<ProviderOrder>, ProviderOrderRepository>();
+            services.AddScoped<IRepository<ProviderOrderItem>, ProviderOrderItemRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

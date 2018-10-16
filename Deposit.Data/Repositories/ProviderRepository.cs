@@ -8,44 +8,39 @@ namespace Deposit.Data.Repositories
 {
     public class ProviderRepository : IRepository<Provider>
     {
-        private static List<Provider> Providers { get; set; }
+        private readonly DepositDbContext _context;
 
-        public ProviderRepository()
+        public ProviderRepository(DepositDbContext context)
         {
-            if (Providers == null)
-                Providers = new List<Provider>();
+            _context = context;
         }
 
         public void Add(Provider provider)
         {
-            Providers.Add(provider);
+            _context.Providers.Add(provider);
+            _context.SaveChanges();
         }
 
-        public Provider Read(Guid guid)
+        public IEnumerable<Provider> ListAll()
         {
-            return Providers.FirstOrDefault(c => c.Id == guid && !c.IsDeleted);
+            return _context.Providers.AsEnumerable();
         }
 
-        public void Update(Guid guid, Provider t)
+        public void Update(Provider entity)
         {
-
+            _context.Providers.Update(entity);
+            _context.SaveChanges();
         }
 
         public void Delete(Guid guid)
         {
-            var provider = Read(guid);
-            provider.Delete();
-        }
-
-        public List<Provider> ReadAll()
-        {
-            var l = new List<Provider>();
+            var provider = ListAll().FirstOrDefault(p => p.Id == guid);
             
-            foreach (var i in Providers)
-                if (!i.IsDeleted)
-                    l.Add(i);
-
-            return l;
+            if (provider == null)
+                throw new ArgumentException("Provider not found.");
+            
+            provider.Delete();
+            Update(provider);
         }
     }
 }

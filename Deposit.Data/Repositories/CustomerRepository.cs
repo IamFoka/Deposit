@@ -8,48 +8,39 @@ namespace Deposit.Data.Repositories
 {
     public class CustomerRepository : IRepository<Customer>
     {
-        private static List<Customer> Customers { get; set; }
+        private readonly DepositDbContext _context;
 
-        public CustomerRepository()
+        public CustomerRepository(DepositDbContext context)
         {
-            if (Customers == null)
-                Customers = new List<Customer>();
+            _context = context;
         }
 
         public void Add(Customer customer)
         {
-            Customers.Add(customer);
+            _context.Customers.Add(customer);
+            _context.SaveChanges();
         }
 
-        public Customer Read(Guid guid)
+        public IEnumerable<Customer> ListAll()
         {
-            return Customers.FirstOrDefault(c => c.Id == guid && !c.IsDeleted);
+            return _context.Customers.AsEnumerable();
         }
 
-        public List<Customer> ReadAll()
+        public void Update(Customer entity)
         {
-            var l = new List<Customer>();
-
-            foreach (var i in Customers)
-                if (!i.IsDeleted)
-                    l.Add(i);
-
-            return l;
-        }
-
-        public void Update(Guid guid, Customer t)
-        {
-
+            _context.Customers.Update(entity);
+            _context.SaveChanges();
         }
 
         public void Delete(Guid guid)
         {
-            var customer = Read(guid);
+            var customer = ListAll().FirstOrDefault(p => p.Id == guid);
 
             if (customer == null)
                 throw new ArgumentException("Customer not found.");
 
             customer.Delete();
+            Update(customer);
         }
     }
 }

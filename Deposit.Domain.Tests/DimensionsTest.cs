@@ -47,59 +47,5 @@ namespace Deposit_Tests
             Assert.Equal(dimensions.Height, 12);
             Assert.Equal(dimensions.Depth, 13);
         }
-
-        [Fact]
-        public void RescaleDimensions_ZeroWidth_ExceptionThrown()
-        {
-            // arrange
-            var dimensions = Dimensions.MakeDimensions(11, 12, 13);
-
-            // act
-            var e = Assert.Throws<ArgumentException>(() => dimensions.Rescale(0, 12, 13));
-
-            // assert
-            Assert.Equal(e.Message, "Width must be larger than 0.");
-        }
-
-        [Fact]
-        public void RescaleDimensions_ZeroHeight_ExceptionThrown()
-        {
-            // arrange
-            var dimensions = Dimensions.MakeDimensions(11, 12, 13);
-
-            // act
-            var e = Assert.Throws<ArgumentException>(() => dimensions.Rescale(11, 0, 13));
-
-            // assert
-            Assert.Equal(e.Message, "Height must be larger than 0.");
-        }
-
-        [Fact]
-        public void RescaleDimensions_ZeroDepth_ExceptionThrown()
-        {
-            // arrange
-            var dimensions = Dimensions.MakeDimensions(11, 12, 13);
-
-            // act
-            var e = Assert.Throws<ArgumentException>(() => dimensions.Rescale(11, 12, 0));
-
-            // assert
-            Assert.Equal(e.Message, "Depth must be larger than 0.");
-        }
-
-        [Fact]
-        public void RescaleDimensions_ValidParameters_DimensionsRescaled()
-        {
-            // arrange
-            var dimensions = Dimensions.MakeDimensions(11, 12, 13);
-
-            // act
-            dimensions.Rescale(11, 12, 13);
-
-            // assert
-            Assert.Equal(dimensions.Width, 11);
-            Assert.Equal(dimensions.Height, 12);
-            Assert.Equal(dimensions.Depth, 13);
-        }
     }
 }

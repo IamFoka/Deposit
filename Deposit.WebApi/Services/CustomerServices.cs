@@ -11,25 +11,22 @@ namespace Deposit.WebApi.Services
     {
         public List<CustomerView> GetAllCustomers(IRepository<Customer> repository)
         {
-            var customers = repository.ReadAll();
-            var customersView = new List<CustomerView>();
-            
-            foreach (var i in customers)
-                customersView.Add(new CustomerView()
+            var customers = repository.ListAll();
+
+            return customers.Select(i => new CustomerView()
                 {
                     BirthDate = i.BirthDate.ToShortDateString(),
                     Cpf = i.Cpf,
                     Id = i.Id,
                     Name = i.Name,
                     TotalSpent = i.TotalSpent
-                });
-
-            return customersView;
+                })
+                .ToList();
         }
 
         public List<CustomerView> GetTopCustomers(IRepository<Customer> repository)
         {
-            var customers = repository.ReadAll().OrderByDescending(c => c.TotalSpent).ToList();
+            var customers = repository.ListAll().OrderByDescending(c => c.TotalSpent).ToList();
             var customersView = new List<CustomerView>();
             var total = (customers.Count < 10) ? customers.Count : 10; 
             
@@ -48,12 +45,12 @@ namespace Deposit.WebApi.Services
         
         public List<CustomerWithOrdersView> GetAllOrders(IRepository<Customer> repository, IRepository<CustomerOrder> orderRepository)
         {
-            var customers = repository.ReadAll();
+            var customers = repository.ListAll();
             var customersView = new List<CustomerWithOrdersView>();
 
             foreach (var i in customers)
             {
-                var orders = orderRepository.ReadAll();
+                var orders = orderRepository.ListAll();
                 var ordersView = orders.Where(ord => ord.CustomerId == i.Id).
                     Select(o => new CustomerWithOrdersView.SimpleCustomerOrderView()
                     {
@@ -77,7 +74,11 @@ namespace Deposit.WebApi.Services
 
         public CustomerView GetCustomer(IRepository<Customer> repository, Guid id)
         {
-            var customer = repository.Read(id);
+            var customer = repository.ListAll().FirstOrDefault(c => c.Id == id);
+
+            if (customer == null)
+                return null;
+            
             return new CustomerView()
             {
                 Name = customer.Name,
@@ -109,13 +110,13 @@ namespace Deposit.WebApi.Services
 
         public void UpdateCustomer(IRepository<Customer> repository, Guid id, string name, string cpf)
         {
-            var customer = repository.Read(id);
+            var customer = repository.ListAll().FirstOrDefault(c => c.Id == id);
 
             if (customer == null)
                 throw new ArgumentException("Customer not found.");
 
             customer.UpdateDocumentation(name, cpf);
-            repository.Update(id, customer);
+            repository.Update(customer);
         }
     }
 }

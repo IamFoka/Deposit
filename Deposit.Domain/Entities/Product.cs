@@ -117,7 +117,7 @@ namespace Deposit.Domain.Entities
             if (IsDeleted)
                 throw new InvalidOperationException("Product is deleted.");
 
-            Dimensions.Rescale(width, height, depth);
+            Dimensions = Dimensions.MakeDimensions(width, height, depth);
             GenerateSku();
         }
 

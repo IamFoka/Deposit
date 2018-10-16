@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
 using Deposit.WebApi.Dtos;
@@ -9,7 +10,7 @@ namespace Deposit.WebApi.Services
     {
         public void UpdateCustomerOrderItem(IRepository<CustomerOrderItem> repository, Guid id, CustomerOrderItemDto dto)
         {
-            var item = repository.Read(id);
+            var item = repository.ListAll().FirstOrDefault(i => i.Id == id);
             
             if (item == null)
                 throw new ArgumentException("Item not found.");

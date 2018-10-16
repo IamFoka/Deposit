@@ -8,48 +8,39 @@ namespace Deposit.Data.Repositories
 {
     public class ProductRepository : IRepository<Product>
     {
-        private static List<Product> Products { get; set; }
+        private readonly DepositDbContext _context;
 
-        public ProductRepository()
+        public ProductRepository(DepositDbContext context)
         {
-            if (Products == null)
-                Products = new List<Product>();
+            _context = context;
         }
 
         public void Add(Product product)
         {
-            Products.Add(product);
+            _context.Products.Add(product);
+            _context.SaveChanges();
         }
 
-        public Product Read(Guid guid)
+        public IEnumerable<Product> ListAll()
         {
-            return Products.FirstOrDefault(c => c.Id == guid && !c.IsDeleted);
+            return _context.Products.AsEnumerable();
         }
 
-        public void Update(Guid guid, Product t)
+        public void Update(Product entity)
         {
-
+            _context.Update(entity);
+            _context.SaveChanges();
         }
 
         public void Delete(Guid guid)
         {
-            var product = Read(guid);
+            var product = ListAll().FirstOrDefault(p => p.Id == guid);
 
             if (product == null)
                 throw new ArgumentException("Product not found.");
             
             product.Delete();
-        }
-
-        public List<Product> ReadAll()
-        {
-            var l = new List<Product>();
-            
-            foreach(var i in Products)
-                if (!i.IsDeleted)
-                    l.Add(i);
-
-            return l;
+            Update(product);
         }
     }
 }
