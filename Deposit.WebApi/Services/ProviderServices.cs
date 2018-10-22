@@ -14,7 +14,8 @@ namespace Deposit.WebApi.Services
         {
             var providers = repository.ListAll();
 
-            return providers.Select(i => new ProviderView()
+            return providers.Where(p => !p.IsDeleted).
+            Select(i => new ProviderView()
             {
                 Id = i.Id,
                 Cnpj = i.Cnpj,
@@ -54,6 +55,11 @@ namespace Deposit.WebApi.Services
         public ProviderView GetProvider(IRepository<Provider> repository, Guid id)
         {
             var provider = repository.ListAll().FirstOrDefault(p => p.Id == id);
+
+            if (provider.IsDeleted)
+            {
+                throw new InvalidOperationException("Provider deleted.");
+            }
 
             if (provider == null)
                 return null;

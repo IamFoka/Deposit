@@ -32,6 +32,9 @@ namespace Deposit.WebApi.Controllers
         {
             var services = new ProviderOrderServices();
             var orders = services.GetAllOrders(_repository);
+            
+            if (orders == null)
+                return NotFound();
 
             if (orders.Count == 0)
                 return NotFound();
@@ -80,6 +83,24 @@ namespace Deposit.WebApi.Controllers
             try
             {
                 services.DeleteProviderOrder(_repository, id);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public IActionResult AddProviderOrderItem(Guid id, [FromBody] ProviderOrderItemDto dto)
+        {
+            var services = new ProviderOrderServices();
+
+            try
+            {
+                services.AddItem(_repository, _productRepository, id, dto);
                 return Ok();
             }
             catch (ArgumentException e)

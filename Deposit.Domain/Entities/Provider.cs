@@ -38,10 +38,10 @@ namespace Deposit.Domain.Entities
             if (IsDeleted)
                 throw new InvalidOperationException("Provider is deleted.");
 
-            if (name != String.Empty)
+            if (!String.IsNullOrEmpty(name))
                 Name = name;
 
-            if (cnpj != String.Empty)
+            if (!String.IsNullOrEmpty(cnpj))
             {
                 if (!BrValidator.ValidateCNPJ(cnpj))
                     throw new ArgumentException("Invalid Cnpj.");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Deposit.Data.Repositories
 {
@@ -31,7 +32,7 @@ namespace Deposit.Data.Repositories
 
         public IEnumerable<ProviderOrder> ListAll()
         {
-            return _context.ProviderOrders.AsEnumerable();
+            return _context.ProviderOrders.Include(o => o.Provider);
         }
 
         public void Update(ProviderOrder entity)

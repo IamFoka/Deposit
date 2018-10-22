@@ -36,13 +36,18 @@ namespace Deposit.Domain.Entities
             return providerOrder;
         }
 
-        public void AddItem(Product product, float amount)
+        public ProviderOrderItem AddItem(Product product, float amount)
         {
             if (IsDeleted)
                 throw new InvalidOperationException("Order is deleted.");
 
             var providerOrderItem = ProviderOrderItem.MakeProviderOrderItem(this, product, amount);
             ProviderOrderItems.Add(providerOrderItem);
+
+            Console.WriteLine("\n\n\n\n\n\n\n\n\n\n\n");
+            Console.WriteLine(providerOrderItem);
+
+            return providerOrderItem;
         }
 
         public void UpdateTotalValue(float value)
@@ -63,9 +68,12 @@ namespace Deposit.Domain.Entities
         {
             if (IsDeleted)
                 throw new InvalidOperationException("Order is already deleted.");
-
-            foreach (var item in ProviderOrderItems)
-                item.Delete();
+            
+            if (ProviderOrderItems != null)
+            {
+                foreach (var item in ProviderOrderItems)
+                    item.Delete();
+            }
 
             base.Delete();
         }

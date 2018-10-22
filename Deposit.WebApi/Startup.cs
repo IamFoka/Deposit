@@ -24,7 +24,7 @@ namespace Deposit.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DepositDbContext>(
-                options => options.UseMySql("server=localhost;port=3306;database=deposit;uid=root;password=1123")
+                options => options.UseMySql("server=localhost;port=3306;database=deposit;uid=ef;password=123")
             );
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

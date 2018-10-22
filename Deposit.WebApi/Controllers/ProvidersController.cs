@@ -40,10 +40,21 @@ namespace Deposit.WebApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(ProviderView))]
         [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         public IActionResult GetProvider(Guid id)
         {
             var services = new ProviderServices();
-            var provider = services.GetProvider(_repository, id);
+            ProviderView provider;
+
+            try
+            {
+                provider = services.GetProvider(_repository, id);
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
+            
 
             if (provider == null)
                 return NotFound();

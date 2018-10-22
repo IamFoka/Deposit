@@ -38,10 +38,21 @@ namespace Deposit.WebApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(ProductView))]
         [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         public IActionResult GetProduct(Guid id)
         {
             var productServices = new ProductServices();
-            var product = productServices.GetProduct(_repository, id);
+            ProductView product;
+
+            try
+            {
+                product = productServices.GetProduct(_repository, id);
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
+                
 
             if (product == null)
                 return NotFound();

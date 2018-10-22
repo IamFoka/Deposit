@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Deposit.Data.Repositories
@@ -32,7 +33,7 @@ namespace Deposit.Data.Repositories
 
         public IEnumerable<CustomerOrder> ListAll()
         {
-            return _context.CustomerOrders.AsEnumerable();
+            return _context.CustomerOrders.Include(o => o.Customer).AsEnumerable();
         }
 
         public void Update(CustomerOrder entity)

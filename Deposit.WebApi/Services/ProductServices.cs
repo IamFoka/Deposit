@@ -14,7 +14,8 @@ namespace Deposit.WebApi.Services
         {
             var products = repository.ListAll();
 
-            return products.Select(i => new ProductView()
+            return products.Where(p => !p.IsDeleted).
+                Select(i => new ProductView()
                 {
                     Id = i.Id,
                     Amount = i.Amount,
@@ -32,7 +33,10 @@ namespace Deposit.WebApi.Services
 
             if (product == null)
                 return null;
-            
+
+            if (product.IsDeleted)
+                throw new InvalidOperationException("Product deleted.");
+
             return new ProductView()
             {
                 Id = product.Id,
