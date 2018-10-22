@@ -68,9 +68,12 @@ namespace Deposit.Domain.Entities
         {
             if (IsDeleted)
                 throw new InvalidOperationException("Order is already deleted.");
-
-            foreach (var item in ProviderOrderItems)
-                item.Delete();
+            
+            if (ProviderOrderItems != null)
+            {
+                foreach (var item in ProviderOrderItems)
+                    item.Delete();
+            }
 
             base.Delete();
         }

@@ -32,6 +32,9 @@ namespace Deposit.WebApi.Controllers
         {
             var services = new ProviderOrderServices();
             var orders = services.GetAllOrders(_repository);
+            
+            if (orders == null)
+                return NotFound();
 
             if (orders.Count == 0)
                 return NotFound();

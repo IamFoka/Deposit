@@ -11,8 +11,14 @@ namespace Deposit.WebApi.Services
     public class ProviderOrderServices
     {
         public List<ProviderOrderView> GetAllOrders(IRepository<ProviderOrder> repository)
-        {
+        {   
+            if (repository == null)
+                return null;
+
             var orders = repository.ListAll();
+
+            if (orders == null)
+                return null;    
 
             return orders.Select(i => new ProviderOrderView()
                 {
@@ -44,6 +50,9 @@ namespace Deposit.WebApi.Services
             var order = repository.ListAll().FirstOrDefault(o => o.Id == id);
 
             if (order == null)
+                return null;
+
+            if (order.ProviderOrderItems == null)
                 return null;
 
             var items = order.ProviderOrderItems

@@ -99,9 +99,9 @@ namespace Deposit.Domain.Entities
         {
             if (IsDeleted)
                 throw new InvalidOperationException("Order item is already deleted.");
-
+            Console.WriteLine("\n\n\n\n\n\n\n\n");
             var deletedMovementItem = ProviderDeposit.MakeProviderDeposit(this, Amount, DepositMovement.Out);
-
+            Console.WriteLine("\n\n\n\n\n\n\n\n");
             base.Delete();
         }
     }
