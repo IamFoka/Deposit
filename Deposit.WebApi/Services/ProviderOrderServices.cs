@@ -105,7 +105,7 @@ namespace Deposit.WebApi.Services
                     ProductId = i.Product.Id,
                     TotalValue = i.TotalValue
                 }).ToList();
-            
+
             return new ProviderOrderCompleteView()
             {
                 Id = order.Id,
@@ -122,8 +122,36 @@ namespace Deposit.WebApi.Services
             };
         }
 
-        public void DeleteProviderOrder(IRepository<ProviderOrder> repository, Guid id)
+        public ProviderOrderItemView AddItem(IRepository<ProviderOrder> repository, IRepository<Product> productRepository, Guid id,  
+            ProviderOrderItemDto dto)
         {
+            var order = repository.ListAll().FirstOrDefault(o => o.Id == id);
+
+            if (order == null)
+                throw new ArgumentException("Order not found.");
+
+            var product = productRepository.ListAll().FirstOrDefault(p => p.Id == dto.ProductId);
+
+            if (product == null)
+                throw new ArgumentException("Product not found.");
+
+            ProviderOrderItem item = order.AddItem(product, dto.Amount);
+
+            return new ProviderOrderItemView()
+                {
+                Id = item.Id,
+                ProductId = item.ProductId,
+                Product = item.Product.Name,
+                Amount = item.Amount,
+                Price = item.Price,
+                TotalValue= item.TotalValue
+                };
+
+                
+        }
+
+        public void DeleteProviderOrder(IRepository<ProviderOrder> repository, Guid id)
+        {   
             repository.Delete(id);
         }        
     }

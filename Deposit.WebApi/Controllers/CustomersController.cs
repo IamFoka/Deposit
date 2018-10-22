@@ -6,6 +6,7 @@ using Deposit.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Deposit.Data.Repositories;
 using Deposit.Domain.Entities;
+using Deposit.Views;
 
 namespace Deposit.WebApi.Controllers
 {
@@ -39,10 +40,20 @@ namespace Deposit.WebApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(Customer))]
         [ProducesResponseType(404)]
+        [ProducesResponseType(404)]
         public IActionResult GetCustomer(Guid id)
         {
             var customerServices = new CustomerServices();
-            var customer = customerServices.GetCustomer(_repository, id);
+            CustomerView customer; 
+
+            try
+            {
+                customer = customerServices.GetCustomer(_repository, id);
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
 
             if (customer == null)
                 return NotFound();
@@ -105,6 +116,7 @@ namespace Deposit.WebApi.Controllers
 
                 return BadRequest(e.Message);
             }
+            
         }
         
         [HttpGet("orders")]

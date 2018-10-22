@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
+using Deposit.Views;
 using Deposit.WebApi.Dtos;
 
 namespace Deposit.WebApi.Services
@@ -20,6 +21,6 @@ namespace Deposit.WebApi.Services
             
             if (dto.Price != 0)
                 item.ChangePrice(dto.Price);
-        }
+        }   
     }
 }

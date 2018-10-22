@@ -42,10 +42,10 @@ namespace Deposit.Domain.Entities
             if (IsDeleted)
                 throw new InvalidOperationException("Customer is deleted.");
 
-            if (name != string.Empty)
+            if (!String.IsNullOrEmpty(name))
                 Name = name;
 
-            if (cpf != string.Empty)
+            if (!String.IsNullOrEmpty(cpf))
             {
                 if (!BrValidator.ValidateCPF(cpf))
                     throw new ArgumentException("Invalid Cpf.");

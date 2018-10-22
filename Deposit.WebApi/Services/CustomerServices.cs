@@ -13,7 +13,8 @@ namespace Deposit.WebApi.Services
         {
             var customers = repository.ListAll();
 
-            return customers.Select(i => new CustomerView()
+            return customers.Where(c => !c.IsDeleted).
+                Select(i => new CustomerView()
                 {
                     BirthDate = i.BirthDate.ToShortDateString(),
                     Cpf = i.Cpf,
@@ -75,6 +76,9 @@ namespace Deposit.WebApi.Services
         public CustomerView GetCustomer(IRepository<Customer> repository, Guid id)
         {
             var customer = repository.ListAll().FirstOrDefault(c => c.Id == id);
+
+            if (customer.IsDeleted)
+                throw new InvalidOperationException("Customer deleted.");
 
             if (customer == null)
                 return null;
