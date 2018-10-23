@@ -42,10 +42,8 @@ namespace Deposit.Domain.Entities
                 throw new InvalidOperationException("Order is deleted.");
 
             var providerOrderItem = ProviderOrderItem.MakeProviderOrderItem(this, product, amount);
+                
             ProviderOrderItems.Add(providerOrderItem);
-
-            Console.WriteLine("\n\n\n\n\n\n\n\n\n\n\n");
-            Console.WriteLine(providerOrderItem);
 
             return providerOrderItem;
         }

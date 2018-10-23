@@ -36,13 +36,16 @@ namespace Deposit.Domain.Entities
             return customerOrder;
         }
 
-        public void AddItem(Product product, float amount)
+        public CustomerOrderItem AddItem(Product product, float amount)
         {
             if (IsDeleted)
                 throw new InvalidOperationException("Order is deleted.");
 
             var customerOrderItem = CustomerOrderItem.MakeCustomerOrderItem(this, product, amount);
+            
             CustomerOrderItems.Add(customerOrderItem);
+
+            return customerOrderItem;
         }
 
         public void UpdateTotalValue(float value)

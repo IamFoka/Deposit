@@ -145,6 +145,34 @@ namespace Deposit.WebApi.Services
             };
         }
 
+        public CustomerOrderItemView AddItem(IRepository<CustomerOrder> repository, IRepository<Product> productRepository, Guid id,
+            CustomerOrderItemDto dto)
+        {
+            var order = repository.ListAll().FirstOrDefault(o => o.Id == id);
+
+            if (order == null)
+                throw new ArgumentException("Order not found.");
+
+            var product = productRepository.ListAll().FirstOrDefault(p => p.Id == dto.ProductId);
+
+            if (product == null)
+                throw new ArgumentException("Product not found.");
+
+            CustomerOrderItem item = order.AddItem(product, dto.Amount);
+
+            repository.Update(order);
+
+            return new CustomerOrderItemView()
+                {
+                Id = item.Id,
+                ProductId = item.ProductId,
+                Product = item.Product.Name,
+                Amount = item.Amount,
+                Price = item.Price,
+                TotalValue= item.TotalValue
+                };
+        }
+
         public void DeleteCustomerOrder(IRepository<CustomerOrder> repository, Guid id)
         {
             repository.Delete(id);

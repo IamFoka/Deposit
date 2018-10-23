@@ -86,5 +86,23 @@ namespace Deposit.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpPost("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public IActionResult AddCustomerOrderItem(Guid id, [FromBody] CustomerOrderItemDto dto)
+        {
+            var services = new CustomerOrderServices();
+
+            try
+            {
+                CustomerOrderItemView  itemView = services.AddItem(_repository, _productRepository, id, dto);
+                return Ok(itemView);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

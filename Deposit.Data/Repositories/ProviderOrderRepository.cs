@@ -21,18 +21,19 @@ namespace Deposit.Data.Repositories
             _context.ProviderOrders.Add(providerOrder);
             _context.SaveChanges();
 
-            if (providerOrder.ProviderOrderItems.Count == 0)
-                return;
+            // if (providerOrder.ProviderOrderItems.Count == 0)
+            //     return;
             
-            var providerOrderItemRepository = new ProviderOrderItemRepository(_context);
+            // var providerOrderItemRepository = new ProviderOrderItemRepository(_context);
 
-            foreach (var providerOrderItem in providerOrder.ProviderOrderItems)
-                providerOrderItemRepository.Add(providerOrderItem);
+            // foreach (var providerOrderItem in providerOrder.ProviderOrderItems)
+            //     providerOrderItemRepository.Add(providerOrderItem);
         }
 
         public IEnumerable<ProviderOrder> ListAll()
         {
-            return _context.ProviderOrders.Include(o => o.Provider);
+            return _context.ProviderOrders.Include(o => o.Provider).Include(o => o.ProviderOrderItems).ThenInclude(i => i.Product).AsEnumerable();
+
         }
 
         public void Update(ProviderOrder entity)

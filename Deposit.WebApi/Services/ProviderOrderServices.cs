@@ -12,9 +12,6 @@ namespace Deposit.WebApi.Services
     {
         public List<ProviderOrderView> GetAllOrders(IRepository<ProviderOrder> repository)
         {   
-            if (repository == null)
-                return null;
-
             var orders = repository.ListAll();
 
             if (orders == null)
@@ -27,7 +24,7 @@ namespace Deposit.WebApi.Services
                     RegisterDate = i.RegisterDate.ToShortDateString(),
                     RegisterNumber = i.RegisterNumber,
                     TotalValue = i.TotalValue
-                }).ToList();
+                }).ToList();  
         }
         
         public List<ProviderOrderView> GetAllOrders(IRepository<ProviderOrder> repository, Guid providerId)
@@ -145,6 +142,8 @@ namespace Deposit.WebApi.Services
                 throw new ArgumentException("Product not found.");
 
             ProviderOrderItem item = order.AddItem(product, dto.Amount);
+
+            repository.Update(order);
 
             return new ProviderOrderItemView()
                 {

@@ -1,4 +1,3 @@
-//using Deposit.Domain.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Deposit.Domain.Entities;
 
@@ -24,8 +23,6 @@ namespace Deposit.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Product>().OwnsOne(p => p.Dimensions);
-
-            //modelBuilder.ApplyConfiguration(new ProductConfiguration());
         }
     }
 }

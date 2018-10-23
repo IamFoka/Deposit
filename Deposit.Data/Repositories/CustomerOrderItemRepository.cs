@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Deposit.Data.Repositories
@@ -28,22 +29,24 @@ namespace Deposit.Data.Repositories
 
         public IEnumerable<CustomerOrderItem> ListAll()
         {
-            return _context.CustomerOrderItems.AsEnumerable();
+            return _context.CustomerOrderItems.Include(o => o.Product).AsEnumerable();
         }
 
         public void Update(CustomerOrderItem entity)
         {
             _context.CustomerOrderItems.Update(entity);
             _context.SaveChanges();
-            // @TODO ver o que acontece quando tem um deposit novo
         }
 
         public void Delete(Guid guid)
         {
-            var customerItemOrder = ListAll().FirstOrDefault(i => i.Id == guid);
+            var customerOrderItem = ListAll().FirstOrDefault(i => i.Id == guid);
 
-            customerItemOrder.Delete();
-            Update(customerItemOrder);
+            if (customerOrderItem == null)
+                throw new ArgumentException("Customer order item not found.");
+
+            customerOrderItem.Delete();
+            Update(customerOrderItem);
         }
     }
 }

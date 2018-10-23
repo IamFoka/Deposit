@@ -100,8 +100,8 @@ namespace Deposit.WebApi.Controllers
 
             try
             {
-                services.AddItem(_repository, _productRepository, id, dto);
-                return Ok();
+                ProviderOrderItemView  itemView = services.AddItem(_repository, _productRepository, id, dto);
+                return Ok(itemView);
             }
             catch (ArgumentException e)
             {

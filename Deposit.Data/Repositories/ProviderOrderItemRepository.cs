@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Deposit.Data.Repositories
 {
@@ -27,14 +28,13 @@ namespace Deposit.Data.Repositories
 
         public IEnumerable<ProviderOrderItem> ListAll()
         {
-            return _context.ProviderOrderItems.AsEnumerable();
+            return _context.ProviderOrderItems.Include(o => o.Product).AsEnumerable();
         }
 
         public void Update(ProviderOrderItem entity)
         {
             _context.ProviderOrderItems.Update(entity);
             _context.SaveChanges();
-            // @TODO ver o que acontece quando tem um deposit novo
         }
 
         public void Delete(Guid guid)
