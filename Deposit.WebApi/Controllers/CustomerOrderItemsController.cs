@@ -1,7 +1,7 @@
 using System;
 using Deposit.Data.Interfaces;
-using Deposit.WebApi.Dtos;
-using Deposit.WebApi.Services;
+using Deposit.Application.Dtos;
+using Deposit.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Deposit.Domain.Entities;
 

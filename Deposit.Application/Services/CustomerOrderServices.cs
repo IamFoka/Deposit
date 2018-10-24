@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Deposit.Views;
+using Deposit.Application.Views;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
-using Deposit.WebApi.Dtos;
+using Deposit.Application.Dtos;
 
-namespace Deposit.WebApi.Services
+namespace Deposit.Application.Services
 {
     public class CustomerOrderServices
     {

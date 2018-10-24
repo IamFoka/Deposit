@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Deposit.Views
+namespace Deposit.Application.Views
 {
     public class CustomerWithOrdersView
     {

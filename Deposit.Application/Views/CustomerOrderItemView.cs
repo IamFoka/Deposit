@@ -1,8 +1,8 @@
 using System;
 
-namespace Deposit.Views
+namespace Deposit.Application.Views
 {
-    public class ProviderOrderItemView
+    public class CustomerOrderItemView
     {
         public Guid Id { get; set; }
         public Guid ProductId { get; set; }
