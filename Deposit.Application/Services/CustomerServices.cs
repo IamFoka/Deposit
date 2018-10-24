@@ -9,9 +9,18 @@ namespace Deposit.Application.Services
 {
     public class CustomerServices
     {
-        public List<CustomerView> GetAllCustomers(IRepository<Customer> repository)
+        private readonly IRepository<Customer> _repository;
+        private readonly IRepository<CustomerOrder> _orderRepository;
+
+        public CustomerServices(IRepository<Customer> repository, IRepository<CustomerOrder> orderRepository)
         {
-            var customers = repository.ListAll();
+            _repository = repository;
+            _orderRepository = orderRepository;
+        }
+
+        public List<CustomerView> GetAllCustomers()
+        {
+            var customers = _repository.ListAll();
 
             return customers.Where(c => !c.IsDeleted).
                 Select(i => new CustomerView()
@@ -25,9 +34,9 @@ namespace Deposit.Application.Services
                 .ToList();
         }
 
-        public List<CustomerView> GetTopCustomers(IRepository<Customer> repository)
+        public List<CustomerView> GetTopCustomers()
         {
-            var customers = repository.ListAll().OrderByDescending(c => c.TotalSpent).ToList();
+            var customers = _repository.ListAll().OrderByDescending(c => c.TotalSpent).ToList();
             var customersView = new List<CustomerView>();
             var total = (customers.Count < 10) ? customers.Count : 10; 
             
@@ -44,14 +53,14 @@ namespace Deposit.Application.Services
             return customersView;
         }
         
-        public List<CustomerWithOrdersView> GetAllOrders(IRepository<Customer> repository, IRepository<CustomerOrder> orderRepository)
+        public List<CustomerWithOrdersView> GetAllOrders()
         {
-            var customers = repository.ListAll();
+            var customers = _repository.ListAll();
             var customersView = new List<CustomerWithOrdersView>();
 
             foreach (var i in customers)
             {
-                var orders = orderRepository.ListAll();
+                var orders = _orderRepository.ListAll();
                 var ordersView = orders.Where(ord => ord.CustomerId == i.Id).
                     Select(o => new CustomerWithOrdersView.SimpleCustomerOrderView()
                     {
@@ -73,9 +82,9 @@ namespace Deposit.Application.Services
             return customersView;
         }
 
-        public CustomerView GetCustomer(IRepository<Customer> repository, Guid id)
+        public CustomerView GetCustomer(Guid id)
         {
-            var customer = repository.ListAll().FirstOrDefault(c => c.Id == id);
+            var customer = _repository.ListAll().FirstOrDefault(c => c.Id == id);
 
             if (customer.IsDeleted)
                 throw new InvalidOperationException("Customer deleted.");
@@ -93,10 +102,10 @@ namespace Deposit.Application.Services
             };
         }
 
-        public CustomerView CreateCustomer(IRepository<Customer> repository, string name, string cpf, DateTime birthDate)
+        public CustomerView CreateCustomer(string name, string cpf, DateTime birthDate)
         {
             var customer = Customer.MakeCustomer(name, cpf, birthDate);
-            repository.Add(customer);
+            _repository.Add(customer);
             return new CustomerView()
             {
                 BirthDate = customer.BirthDate.ToShortDateString(),
@@ -107,20 +116,20 @@ namespace Deposit.Application.Services
             };
         }
 
-        public void DeleteCustomer(IRepository<Customer> repository, Guid id)
+        public void DeleteCustomer(Guid id)
         {
-            repository.Delete(id);
+            _repository.Delete(id);
         }
 
-        public void UpdateCustomer(IRepository<Customer> repository, Guid id, string name, string cpf)
+        public void UpdateCustomer(Guid id, string name, string cpf)
         {
-            var customer = repository.ListAll().FirstOrDefault(c => c.Id == id);
+            var customer = _repository.ListAll().FirstOrDefault(c => c.Id == id);
 
             if (customer == null)
                 throw new ArgumentException("Customer not found.");
 
             customer.UpdateDocumentation(name, cpf);
-            repository.Update(customer);
+            _repository.Update(customer);
         }
     }
 }

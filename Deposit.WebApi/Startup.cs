@@ -7,6 +7,7 @@ using Deposit.Data;
 using Deposit.Data.Interfaces;
 using Deposit.Data.Repositories;
 using Deposit.Domain.Entities;
+using Deposit.Application.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Deposit.WebApi
@@ -36,6 +37,14 @@ namespace Deposit.WebApi
             services.AddScoped<IRepository<Provider>, ProviderRepository>();
             services.AddScoped<IRepository<ProviderOrder>, ProviderOrderRepository>();
             services.AddScoped<IRepository<ProviderOrderItem>, ProviderOrderItemRepository>();
+
+            services.AddScoped<CustomerServices>();
+            services.AddScoped<CustomerOrderServices>();
+            services.AddScoped<CustomerOrderItemServices>();
+            services.AddScoped<ProviderServices>();
+            services.AddScoped<ProviderOrderServices>();
+            services.AddScoped<ProviderOrderItemServices>();
+            services.AddScoped<ProductServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

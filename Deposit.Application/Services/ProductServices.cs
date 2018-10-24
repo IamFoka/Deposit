@@ -10,9 +10,16 @@ namespace Deposit.Application.Services
 {
     public class ProductServices
     {
-        public List<ProductView> GetAllProducts(IRepository<Product> repository)
+        private readonly IRepository<Product> _repository;
+
+        public ProductServices(IRepository<Product> repository)
         {
-            var products = repository.ListAll();
+            _repository = repository;
+        }
+
+        public List<ProductView> GetAllProducts()
+        {
+            var products = _repository.ListAll();
 
             return products.Where(p => !p.IsDeleted).
                 Select(i => new ProductView()
@@ -27,9 +34,9 @@ namespace Deposit.Application.Services
                 .ToList();
         }
 
-        public ProductView GetProduct(IRepository<Product> repository, Guid id)
+        public ProductView GetProduct(Guid id)
         {
-            var product = repository.ListAll().FirstOrDefault(p => p.Id == id);
+            var product = _repository.ListAll().FirstOrDefault(p => p.Id == id);
 
             if (product == null)
                 return null;
@@ -48,11 +55,11 @@ namespace Deposit.Application.Services
             };
         }
 
-        public ProductView CreateProduct(IRepository<Product> repository, ProductDto productDto)
+        public ProductView CreateProduct(ProductDto productDto)
         {
             var dimensions = Dimensions.MakeDimensions(productDto.Dimensions.Width, productDto.Dimensions.Height, productDto.Dimensions.Depth);
             var product = Product.MakeProduct(productDto.Name, productDto.Description, productDto.Price, dimensions);
-            repository.Add(product);
+            _repository.Add(product);
             return new ProductView()
             {
                 Id = product.Id,
@@ -64,14 +71,14 @@ namespace Deposit.Application.Services
             };
         }
 
-        public void DeleteProduct(IRepository<Product> repository, Guid id)
+        public void DeleteProduct(Guid id)
         {
-            repository.Delete(id);
+            _repository.Delete(id);
         }
 
-        public void UpdateProduct(IRepository<Product> repository, Guid id, ProductDto productDto)
+        public void UpdateProduct(Guid id, ProductDto productDto)
         {
-            var product = repository.ListAll().FirstOrDefault(p => p.Id == id);
+            var product = _repository.ListAll().FirstOrDefault(p => p.Id == id);
             
             if (product == null)
                 throw new ArgumentException("Product not found.");
@@ -85,7 +92,7 @@ namespace Deposit.Application.Services
             if (productDto.Dimensions != null)
                 product.Redimension(productDto.Dimensions.Width, productDto.Dimensions.Height, productDto.Dimensions.Depth);
             
-            repository.Update(product);
+            _repository.Update(product);
         }
     }
 }

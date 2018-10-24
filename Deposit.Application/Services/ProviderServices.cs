@@ -10,9 +10,18 @@ namespace Deposit.Application.Services
 {
     public class ProviderServices
     {
-        public List<ProviderView> GetAllProviders(IRepository<Provider> repository)
+        private readonly IRepository<Provider> _repository;
+        private readonly IRepository<ProviderOrder> _orderRepository;
+
+        public ProviderServices(IRepository<Provider> repository, IRepository<ProviderOrder> orderRepository)
         {
-            var providers = repository.ListAll();
+            _repository = repository;
+            _orderRepository = orderRepository;
+        }
+
+        public List<ProviderView> GetAllProviders()
+        {
+            var providers = _repository.ListAll();
 
             return providers.Where(p => !p.IsDeleted).
             Select(i => new ProviderView()
@@ -23,14 +32,14 @@ namespace Deposit.Application.Services
             }).ToList();
         }
 
-        public List<ProviderWithOrdersView> GetAllOrders(IRepository<Provider> repository, IRepository<ProviderOrder> orderRepository)
+        public List<ProviderWithOrdersView> GetAllOrders()
         {
-            var providers = repository.ListAll();
+            var providers = _repository.ListAll();
             var providersView = new List<ProviderWithOrdersView>();
 
             foreach (var i in providers)
             {
-                var orders = orderRepository.ListAll();
+                var orders = _orderRepository.ListAll();
                 var ordersView = orders.Where(ord => ord.ProviderId == i.Id).
                     Select(o => new ProviderWithOrdersView.SimpleProviderOrderView()
                     {
@@ -52,9 +61,9 @@ namespace Deposit.Application.Services
             return providersView;
         }
 
-        public ProviderView GetProvider(IRepository<Provider> repository, Guid id)
+        public ProviderView GetProvider(Guid id)
         {
-            var provider = repository.ListAll().FirstOrDefault(p => p.Id == id);
+            var provider = _repository.ListAll().FirstOrDefault(p => p.Id == id);
 
             if (provider.IsDeleted)
             {
@@ -72,10 +81,10 @@ namespace Deposit.Application.Services
             };
         }
 
-        public ProviderView CreateProvider(IRepository<Provider> repository, ProviderDto providerDto)
+        public ProviderView CreateProvider(ProviderDto providerDto)
         {
             var provider = Provider.MakeProvider(providerDto.Name, providerDto.Cnpj);
-            repository.Add(provider);
+            _repository.Add(provider);
             return new ProviderView()
             {
                 Id = provider.Id,
@@ -84,20 +93,20 @@ namespace Deposit.Application.Services
             };
         }
 
-        public void DeleteProvider(IRepository<Provider> repository, Guid id)
+        public void DeleteProvider(Guid id)
         {
-            repository.Delete(id);
+            _repository.Delete(id);
         }
 
-        public void UpdateProvider(IRepository<Provider> repository, Guid id, ProviderDto providerDto)
+        public void UpdateProvider(Guid id, ProviderDto providerDto)
         {
-            var provider = repository.ListAll().FirstOrDefault(p => p.Id == id);
+            var provider = _repository.ListAll().FirstOrDefault(p => p.Id == id);
 
             if (provider == null)
                 throw new ArgumentException("Customer not found.");
             
             provider.UpdateDocumentation(providerDto.Name, providerDto.Cnpj);
-            repository.Update(provider);
+            _repository.Update(provider);
         }
     }
 }
