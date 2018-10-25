@@ -19,7 +19,7 @@ namespace Deposit.Application.Services
 
         public List<ProductView> GetAllProducts()
         {
-            var products = _repository.ListAll();
+            var products = _repository.GetAll();
 
             return products.Where(p => !p.IsDeleted).
                 Select(i => new ProductView()
@@ -36,7 +36,7 @@ namespace Deposit.Application.Services
 
         public ProductView GetProduct(Guid id)
         {
-            var product = _repository.ListAll().FirstOrDefault(p => p.Id == id);
+            var product = _repository.GetAll().FirstOrDefault(p => p.Id == id);
 
             if (product == null)
                 return null;
@@ -78,7 +78,7 @@ namespace Deposit.Application.Services
 
         public void UpdateProduct(Guid id, ProductDto productDto)
         {
-            var product = _repository.ListAll().FirstOrDefault(p => p.Id == id);
+            var product = _repository.GetAll().FirstOrDefault(p => p.Id == id);
             
             if (product == null)
                 throw new ArgumentException("Product not found.");

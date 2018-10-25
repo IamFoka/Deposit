@@ -5,6 +5,7 @@ using Deposit.Application.Views;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
 using Deposit.Application.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace Deposit.Application.Services
 {
@@ -21,7 +22,7 @@ namespace Deposit.Application.Services
 
         public List<ProviderView> GetAllProviders()
         {
-            var providers = _repository.ListAll();
+            var providers = _repository.GetAll();
 
             return providers.Where(p => !p.IsDeleted).
             Select(i => new ProviderView()
@@ -34,36 +35,25 @@ namespace Deposit.Application.Services
 
         public List<ProviderWithOrdersView> GetAllOrders()
         {
-            var providers = _repository.ListAll();
-            var providersView = new List<ProviderWithOrdersView>();
-
-            foreach (var i in providers)
+            return _repository.GetAll(p => p.ProviderOrders)
+            .Select(r => new ProviderWithOrdersView()
             {
-                var orders = _orderRepository.ListAll();
-                var ordersView = orders.Where(ord => ord.ProviderId == i.Id).
-                    Select(o => new ProviderWithOrdersView.SimpleProviderOrderView()
-                    {
-                        Id = o.Id, 
-                        RegisterDate = o.RegisterDate.ToShortDateString(), 
-                        RegisterNumber = o.RegisterNumber, 
-                        TotalValue = o.TotalValue
-                    }).ToList();
-                
-                providersView.Add(new ProviderWithOrdersView()
+                Cnpj = r.Cnpj,
+                Id = r.Id,
+                Name = r.Name,
+                Orders = r.ProviderOrders.Select(p => new ProviderOrderView()
                 {
-                    Cnpj = i.Cnpj,
-                    Id = i.Id,
-                    Name = i.Name,
-                    Orders = ordersView
-                });
-            }
-
-            return providersView;
+                    Id = p.Id,
+                    RegisterDate = p.RegisterDate.ToShortDateString(),
+                    RegisterNumber = p.RegisterNumber,
+                    TotalValue = p.TotalValue
+                })
+            }).ToList();
         }
 
         public ProviderView GetProvider(Guid id)
         {
-            var provider = _repository.ListAll().FirstOrDefault(p => p.Id == id);
+            var provider = _repository.GetAll().FirstOrDefault(p => p.Id == id);
 
             if (provider.IsDeleted)
             {
@@ -72,7 +62,7 @@ namespace Deposit.Application.Services
 
             if (provider == null)
                 return null;
-            
+
             return new ProviderView()
             {
                 Id = provider.Id,
@@ -100,11 +90,11 @@ namespace Deposit.Application.Services
 
         public void UpdateProvider(Guid id, ProviderDto providerDto)
         {
-            var provider = _repository.ListAll().FirstOrDefault(p => p.Id == id);
+            var provider = _repository.GetAll().FirstOrDefault(p => p.Id == id);
 
             if (provider == null)
                 throw new ArgumentException("Customer not found.");
-            
+
             provider.UpdateDocumentation(providerDto.Name, providerDto.Cnpj);
             _repository.Update(provider);
         }

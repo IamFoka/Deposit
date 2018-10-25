@@ -23,7 +23,7 @@ namespace Deposit.Application.Services
 
         public List<ProviderOrderView> GetAllOrders()
         {   
-            var orders = _repository.ListAll();
+            var orders = _repository.GetAll();
 
             if (orders == null)
                 return null;    
@@ -40,7 +40,7 @@ namespace Deposit.Application.Services
         
         public List<ProviderOrderView> GetAllOrders(Guid providerId)
         {
-            var orders = _repository.ListAll();
+            var orders = _repository.GetAll();
 
             return orders.Where(ord => ord.ProviderId == providerId)
                 .Select(i => new ProviderOrderView()
@@ -55,7 +55,7 @@ namespace Deposit.Application.Services
 
         public ProviderOrderCompleteView GetOrder(Guid id)
         {
-            var order = _repository.ListAll().FirstOrDefault(o => o.Id == id);
+            var order = _repository.GetAll().FirstOrDefault(o => o.Id == id);
 
             if (order == null)
                 return null;
@@ -92,7 +92,7 @@ namespace Deposit.Application.Services
 
         public ProviderOrderCompleteView CreateOrder(ProviderOrderDto dto)
         {
-            var provider = _providerRepository.ListAll().FirstOrDefault(p => p.Id == dto.ProviderId);
+            var provider = _providerRepository.GetAll().FirstOrDefault(p => p.Id == dto.ProviderId);
             
             if (provider == null)
                 throw new ArgumentException("Provider not found.");
@@ -101,7 +101,7 @@ namespace Deposit.Application.Services
 
             foreach (var i in dto.Items)
             {
-                var product = _productRepository.ListAll().FirstOrDefault(p => p.Id == i.ProductId);
+                var product = _productRepository.GetAll().FirstOrDefault(p => p.Id == i.ProductId);
                 
                 if (product == null)
                     throw new ArgumentException("Product not found.");
@@ -141,12 +141,12 @@ namespace Deposit.Application.Services
         public ProviderOrderItemView AddItem(Guid id,  
             ProviderOrderItemDto dto)
         {
-            var order = _repository.ListAll().FirstOrDefault(o => o.Id == id);
+            var order = _repository.GetAll().FirstOrDefault(o => o.Id == id);
 
             if (order == null)
                 throw new ArgumentException("Order not found.");
 
-            var product = _productRepository.ListAll().FirstOrDefault(p => p.Id == dto.ProductId);
+            var product = _productRepository.GetAll().FirstOrDefault(p => p.Id == dto.ProductId);
 
             if (product == null)
                 throw new ArgumentException("Product not found.");

@@ -32,12 +32,5 @@ namespace Deposit.Domain.Entities
 
             return dimensions;
         }
-
-        /*
-        public void Rescale(int width, int height, int depth)
-        {
-
-        }
-        */
     }
 }

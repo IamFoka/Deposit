@@ -30,13 +30,13 @@ namespace Deposit.WebApi
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddScoped<IRepository<Product>, ProductRepository>();
-            services.AddScoped<IRepository<Customer>, CustomerRepository>();
-            services.AddScoped<IRepository<CustomerOrder>, CustomerOrderRepository>();
-            services.AddScoped<IRepository<CustomerOrderItem>, CustomerOrderItemRepository>();
-            services.AddScoped<IRepository<Provider>, ProviderRepository>();
-            services.AddScoped<IRepository<ProviderOrder>, ProviderOrderRepository>();
-            services.AddScoped<IRepository<ProviderOrderItem>, ProviderOrderItemRepository>();
+            services.AddScoped<IRepository<Product>, GenericRepository<Product>>();
+            services.AddScoped<IRepository<Customer>, GenericRepository<Customer>>();
+            services.AddScoped<IRepository<CustomerOrder>, GenericRepository<CustomerOrder>>();
+            services.AddScoped<IRepository<CustomerOrderItem>, GenericRepository<CustomerOrderItem>>();
+            services.AddScoped<IRepository<Provider>, GenericRepository<Provider>>();
+            services.AddScoped<IRepository<ProviderOrder>, GenericRepository<ProviderOrder>>();
+            services.AddScoped<IRepository<ProviderOrderItem>, GenericRepository<ProviderOrderItem>>();
 
             services.AddScoped<CustomerServices>();
             services.AddScoped<CustomerOrderServices>();

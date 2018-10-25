@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 
 namespace Deposit.Domain.Entities
 {
@@ -7,6 +8,7 @@ namespace Deposit.Domain.Entities
         public string Name { get; private set; }
         public DateTime RegisterDate { get; private set; }
         public string Cnpj { get; private set; }
+        public Collection<ProviderOrder> ProviderOrders {get; private set;}
 
         protected Provider() :
             base()

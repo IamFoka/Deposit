@@ -237,9 +237,9 @@ namespace Deposit_Tests
             product.Redimension(14, 15, 16);
 
             // assert
-            Assert.Equal(dimensions.Width, 14);
-            Assert.Equal(dimensions.Height, 15);
-            Assert.Equal(dimensions.Depth, 16);
+            Assert.Equal(14, product.Dimensions.Width);
+            Assert.Equal(15, product.Dimensions.Height);
+            Assert.Equal(16, product.Dimensions.Depth);
             Assert.Equal(product.Sku, "TES-PRO-14-15-16");
         }
 
