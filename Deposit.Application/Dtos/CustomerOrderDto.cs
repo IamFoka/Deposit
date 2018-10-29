@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Deposit.Application.Dtos
 {
@@ -6,6 +7,6 @@ namespace Deposit.Application.Dtos
     {
         public int RegisterNumber { get; set; }
         public Guid CustomerId { get; set; }
-        public CustomerOrderItemDto[] Items { get; set; }
+        public List<CustomerOrderItemDto> Items { get; set; }
     }
 }

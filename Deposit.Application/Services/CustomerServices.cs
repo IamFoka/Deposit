@@ -20,17 +20,16 @@ namespace Deposit.Application.Services
 
         public List<CustomerView> GetAllCustomers()
         {
-            var customers = _repository.GetAll();
-
-            return customers.Where(c => !c.IsDeleted).
-                 Select(i => new CustomerView()
-                 {
-                     BirthDate = i.BirthDate.ToShortDateString(),
-                     Cpf = i.Cpf,
-                     Id = i.Id,
-                     Name = i.Name,
-                     TotalSpent = i.TotalSpent
-                 })
+            return _repository.
+                FindBy(c => !c.IsDeleted).
+                Select(i => new CustomerView()
+                {
+                    BirthDate = i.BirthDate.ToShortDateString(),
+                    Cpf = i.Cpf,
+                    Id = i.Id,
+                    Name = i.Name,
+                    TotalSpent = i.TotalSpent
+                })
                  .ToList();
         }
 
@@ -39,7 +38,7 @@ namespace Deposit.Application.Services
             var customers = _repository.GetAll().OrderByDescending(c => c.TotalSpent).ToList();
             var customersView = new List<CustomerView>();
             var total = (customers.Count < 10) ? customers.Count : 10;
-            
+
             for (var i = 0; i < total; i++)
                 customersView.Add(new CustomerView()
                 {
@@ -55,36 +54,26 @@ namespace Deposit.Application.Services
 
         public List<CustomerWithOrdersView> GetAllOrders()
         {
-            var customers = _repository.GetAll();
-            var customersView = new List<CustomerWithOrdersView>();
-
-            foreach (var i in customers)
+            return _repository.GetAll(c => c.CustomerOrders)
+            .Select(r => new CustomerWithOrdersView()
             {
-                var orders = _orderRepository.GetAll();
-                var ordersView = orders.Where(ord => ord.CustomerId == i.Id).
-                    Select(o => new CustomerWithOrdersView.SimpleCustomerOrderView()
-                    {
-                        Id = o.Id,
-                        RegisterDate = o.RegisterDate.ToShortDateString(),
-                        RegisterNumber = o.RegisterNumber,
-                        TotalValue = o.TotalValue
-                    }).ToList();
-
-                customersView.Add(new CustomerWithOrdersView()
+                Cpf = r.Cpf,
+                Id = r.Id,
+                Name = r.Name,
+                Orders = r.CustomerOrders.Select(c => new CustomerSimpleOrderView()
                 {
-                    Cpf = i.Cpf,
-                    Id = i.Id,
-                    Name = i.Name,
-                    Orders = ordersView
-                });
-            }
-
-            return customersView;
+                    Id = c.Id,
+                    RegisterDate = c.RegisterDate.ToShortDateString(),
+                    RegisterNumber = c.RegisterNumber,
+                    TotalValue = c.TotalValue
+                })
+            }).ToList();
         }
+        
 
         public CustomerView GetCustomer(Guid id)
         {
-            var customer = _repository.GetAll().FirstOrDefault(c => c.Id == id);
+            var customer = _repository.GetById(id);
 
             if (customer.IsDeleted)
                 throw new InvalidOperationException("Customer deleted.");
@@ -123,7 +112,7 @@ namespace Deposit.Application.Services
 
         public void UpdateCustomer(Guid id, string name, string cpf)
         {
-            var customer = _repository.GetAll().FirstOrDefault(c => c.Id == id);
+            var customer = _repository.GetById(id);
 
             if (customer == null)
                 throw new ArgumentException("Customer not found.");

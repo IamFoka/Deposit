@@ -9,6 +9,6 @@ namespace Deposit.Application.Views
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Cnpj { get; set; }
-        public IEnumerable<ProviderOrderView> Orders { get; set; }
+        public IEnumerable<ProviderSimpleOrderView> Orders { get; set; }
     }
 }

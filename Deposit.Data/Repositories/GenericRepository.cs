@@ -27,6 +27,12 @@ namespace Deposit.Data.Repositories
         {
             var entity = GetById(id);
 
+            if (entity.IsDeleted)
+                throw new ArgumentException("It's already deleted.");
+            
+            if(entity == null)
+                throw new ArgumentException("Not found.");
+
             entity.Delete();
             Update(entity);
         }

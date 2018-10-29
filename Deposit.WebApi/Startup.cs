@@ -21,11 +21,11 @@ namespace Deposit.WebApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // This method gets called by the runtime. Use this method to add services to the container.    
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DepositDbContext>(
-                options => options.UseMySql("server=localhost;port=3306;database=deposit;uid=ef;password=123")
+                options => options.UseMySql("server=localhost;port=3307;database=deposit;uid=ef;password=123")
             );
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

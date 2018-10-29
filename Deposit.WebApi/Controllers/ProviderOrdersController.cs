@@ -23,7 +23,7 @@ namespace Deposit.WebApi.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(List<ProviderOrderView>))]
         [ProducesResponseType(404)]
-        public IActionResult GetCustomerOrders()
+        public IActionResult GetProvidersOrders()
         {
             var orders = _providerOrderServices.GetAllOrders();
             
@@ -87,7 +87,7 @@ namespace Deposit.WebApi.Controllers
         {
             try
             {
-                ProviderOrderItemView  itemView = _providerOrderServices.AddItem(id, dto);
+                Guid  itemView = _providerOrderServices.AddItem(id, dto);
                 return Ok(itemView);
             }
             catch (ArgumentException e)

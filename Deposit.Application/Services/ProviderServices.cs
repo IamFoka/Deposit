@@ -22,15 +22,15 @@ namespace Deposit.Application.Services
 
         public List<ProviderView> GetAllProviders()
         {
-            var providers = _repository.GetAll();
-
-            return providers.Where(p => !p.IsDeleted).
+            return _repository.
+            FindBy(p => !p.IsDeleted).
             Select(i => new ProviderView()
             {
                 Id = i.Id,
                 Cnpj = i.Cnpj,
                 Name = i.Name
-            }).ToList();
+            })
+             .ToList();
         }
 
         public List<ProviderWithOrdersView> GetAllOrders()
@@ -41,7 +41,7 @@ namespace Deposit.Application.Services
                 Cnpj = r.Cnpj,
                 Id = r.Id,
                 Name = r.Name,
-                Orders = r.ProviderOrders.Select(p => new ProviderOrderView()
+                Orders = r.ProviderOrders.Select(p => new ProviderSimpleOrderView()
                 {
                     Id = p.Id,
                     RegisterDate = p.RegisterDate.ToShortDateString(),
@@ -53,12 +53,10 @@ namespace Deposit.Application.Services
 
         public ProviderView GetProvider(Guid id)
         {
-            var provider = _repository.GetAll().FirstOrDefault(p => p.Id == id);
+            var provider = _repository.GetById(id);
 
             if (provider.IsDeleted)
-            {
                 throw new InvalidOperationException("Provider deleted.");
-            }
 
             if (provider == null)
                 return null;
@@ -70,7 +68,6 @@ namespace Deposit.Application.Services
                 Name = provider.Name
             };
         }
-
         public ProviderView CreateProvider(ProviderDto providerDto)
         {
             var provider = Provider.MakeProvider(providerDto.Name, providerDto.Cnpj);
@@ -90,7 +87,7 @@ namespace Deposit.Application.Services
 
         public void UpdateProvider(Guid id, ProviderDto providerDto)
         {
-            var provider = _repository.GetAll().FirstOrDefault(p => p.Id == id);
+            var provider = _repository.GetById(id);
 
             if (provider == null)
                 throw new ArgumentException("Customer not found.");
