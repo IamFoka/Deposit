@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Deposit.Domain.Entities
 {
@@ -12,7 +13,7 @@ namespace Deposit.Domain.Entities
         public float Amount { get; protected set; }
         public float Price { get; protected set; }
         public float TotalValue { get; protected set; }
-        public List<ProviderDeposit> Deposits { get; protected set; }
+        public Collection<ProviderDeposit> Deposits { get; protected set; }
 
         private ProviderOrderItem() :
             base()
@@ -38,7 +39,7 @@ namespace Deposit.Domain.Entities
             providerOrderItem.Amount = amount;
             providerOrderItem.Price = product.Price;
             providerOrderItem.TotalValue = providerOrderItem.Price * providerOrderItem.Amount;
-            providerOrderItem.Deposits = new List<ProviderDeposit>();
+            providerOrderItem.Deposits = new Collection<ProviderDeposit>();
 
             providerOrder.UpdateTotalValue(providerOrderItem.TotalValue);
 

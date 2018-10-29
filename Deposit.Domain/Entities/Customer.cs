@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 
 namespace Deposit.Domain.Entities
 {
@@ -9,6 +10,8 @@ namespace Deposit.Domain.Entities
         public DateTime BirthDate { get; protected set; }
         public DateTime RegisterDate { get; protected set; }
         public float TotalSpent { get; protected set; }
+
+        public Collection<CustomerOrder> CustomerOrders {get; private set;}
 
         protected Customer() :
             base()

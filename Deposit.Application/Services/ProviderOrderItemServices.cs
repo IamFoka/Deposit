@@ -18,7 +18,7 @@ namespace Deposit.Application.Services
 
         public void UpdateProviderOrderItem(Guid id, ProviderOrderItemDto dto)
         {
-            var item = _repository.ListAll().FirstOrDefault(i => i.Id == id);
+            var item = _repository.GetById(id);
             
             if (item == null)
                 throw new ArgumentException("Item not found.");

@@ -21,22 +21,22 @@ namespace Deposit.WebApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // This method gets called by the runtime. Use this method to add services to the container.    
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DepositDbContext>(
-                options => options.UseMySql("server=localhost;port=3306;database=deposit;uid=ef;password=123")
+                options => options.UseMySql("server=localhost;port=3307;database=deposit;uid=ef;password=123")
             );
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddScoped<IRepository<Product>, ProductRepository>();
-            services.AddScoped<IRepository<Customer>, CustomerRepository>();
-            services.AddScoped<IRepository<CustomerOrder>, CustomerOrderRepository>();
-            services.AddScoped<IRepository<CustomerOrderItem>, CustomerOrderItemRepository>();
-            services.AddScoped<IRepository<Provider>, ProviderRepository>();
-            services.AddScoped<IRepository<ProviderOrder>, ProviderOrderRepository>();
-            services.AddScoped<IRepository<ProviderOrderItem>, ProviderOrderItemRepository>();
+            services.AddScoped<IRepository<Product>, GenericRepository<Product>>();
+            services.AddScoped<IRepository<Customer>, GenericRepository<Customer>>();
+            services.AddScoped<IRepository<CustomerOrder>, GenericRepository<CustomerOrder>>();
+            services.AddScoped<IRepository<CustomerOrderItem>, GenericRepository<CustomerOrderItem>>();
+            services.AddScoped<IRepository<Provider>, GenericRepository<Provider>>();
+            services.AddScoped<IRepository<ProviderOrder>, GenericRepository<ProviderOrder>>();
+            services.AddScoped<IRepository<ProviderOrderItem>, GenericRepository<ProviderOrderItem>>();
 
             services.AddScoped<CustomerServices>();
             services.AddScoped<CustomerOrderServices>();

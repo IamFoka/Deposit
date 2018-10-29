@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Deposit.Domain.Entities
 {
@@ -10,7 +12,7 @@ namespace Deposit.Domain.Entities
         public Guid ProviderId { get; private set; }
         public Provider Provider { get; private set; }
         public float TotalValue { get; private set; }
-        public List<ProviderOrderItem> ProviderOrderItems { get; private set; }
+        public Collection<ProviderOrderItem> ProviderOrderItems { get; private set; }
 
         protected ProviderOrder() :
             base()
@@ -31,21 +33,28 @@ namespace Deposit.Domain.Entities
             providerOrder.ProviderId = provider.Id;
             providerOrder.Provider = provider;
             providerOrder.TotalValue = 0;
-            providerOrder.ProviderOrderItems = new List<ProviderOrderItem>();
+            providerOrder.ProviderOrderItems = null;
 
             return providerOrder;
         }
 
-        public ProviderOrderItem AddItem(Product product, float amount)
+        public Guid AddItem(Product product, float amount)
         {
             if (IsDeleted)
                 throw new InvalidOperationException("Order is deleted.");
+
+            if (ProviderOrderItems == null)
+                ProviderOrderItems = new Collection<ProviderOrderItem>();
 
             var providerOrderItem = ProviderOrderItem.MakeProviderOrderItem(this, product, amount);
                 
             ProviderOrderItems.Add(providerOrderItem);
 
-            return providerOrderItem;
+            return providerOrderItem.Id;
+        }
+
+        public IEnumerable<Guid> AddItem(IEnumerable<Product> products, IEnumerable<float> amounts){
+            return products.Zip(amounts, (p,a) => AddItem(p,a));
         }
 
         public void UpdateTotalValue(float value)

@@ -17,7 +17,7 @@ namespace Deposit.Application.Services
 
         public void UpdateCustomerOrderItem(Guid id, CustomerOrderItemDto dto)
         {
-            var item = _repository.ListAll().FirstOrDefault(i => i.Id == id);
+            var item = _repository.GetById(id);
             
             if (item == null)
                 throw new ArgumentException("Item not found.");
