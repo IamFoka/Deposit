@@ -10,9 +10,20 @@ namespace Deposit.Application.Services
 {
     public class ProviderOrderServices
     {
-        public List<ProviderOrderView> GetAllOrders(IRepository<ProviderOrder> repository)
+        private readonly IRepository<ProviderOrder> _repository;
+        private readonly IRepository<Provider> _providerRepository;
+        private readonly IRepository<Product> _productRepository;
+
+        public ProviderOrderServices(IRepository<ProviderOrder> repository, IRepository<Provider> providerRepository, IRepository<Product> productRepository)
+        {
+            _repository = repository;
+            _providerRepository = providerRepository;
+            _productRepository = productRepository;
+        }
+
+        public List<ProviderOrderView> GetAllOrders()
         {   
-            var orders = repository.ListAll();
+            var orders = _repository.ListAll();
 
             if (orders == null)
                 return null;    
@@ -27,9 +38,9 @@ namespace Deposit.Application.Services
                 }).ToList();  
         }
         
-        public List<ProviderOrderView> GetAllOrders(IRepository<ProviderOrder> repository, Guid providerId)
+        public List<ProviderOrderView> GetAllOrders(Guid providerId)
         {
-            var orders = repository.ListAll();
+            var orders = _repository.ListAll();
 
             return orders.Where(ord => ord.ProviderId == providerId)
                 .Select(i => new ProviderOrderView()
@@ -42,9 +53,9 @@ namespace Deposit.Application.Services
                 }).ToList();
         }
 
-        public ProviderOrderCompleteView GetOrder(IRepository<ProviderOrder> repository, Guid id)
+        public ProviderOrderCompleteView GetOrder(Guid id)
         {
-            var order = repository.ListAll().FirstOrDefault(o => o.Id == id);
+            var order = _repository.ListAll().FirstOrDefault(o => o.Id == id);
 
             if (order == null)
                 return null;
@@ -79,10 +90,9 @@ namespace Deposit.Application.Services
             };
         }
 
-        public ProviderOrderCompleteView CreateOrder(IRepository<ProviderOrder> repository, 
-            IRepository<Provider> providerRepository, IRepository<Product> productRepository, ProviderOrderDto dto)
+        public ProviderOrderCompleteView CreateOrder(ProviderOrderDto dto)
         {
-            var provider = providerRepository.ListAll().FirstOrDefault(p => p.Id == dto.ProviderId);
+            var provider = _providerRepository.ListAll().FirstOrDefault(p => p.Id == dto.ProviderId);
             
             if (provider == null)
                 throw new ArgumentException("Provider not found.");
@@ -91,7 +101,7 @@ namespace Deposit.Application.Services
 
             foreach (var i in dto.Items)
             {
-                var product = productRepository.ListAll().FirstOrDefault(p => p.Id == i.ProductId);
+                var product = _productRepository.ListAll().FirstOrDefault(p => p.Id == i.ProductId);
                 
                 if (product == null)
                     throw new ArgumentException("Product not found.");
@@ -99,7 +109,7 @@ namespace Deposit.Application.Services
                 order.AddItem(product, i.Amount);
             }
             
-            repository.Add(order);
+            _repository.Add(order);
 
             var items = order.ProviderOrderItems
                 .Select(i => new ProviderOrderItemView()
@@ -128,22 +138,22 @@ namespace Deposit.Application.Services
             };
         }
 
-        public ProviderOrderItemView AddItem(IRepository<ProviderOrder> repository, IRepository<Product> productRepository, Guid id,  
+        public ProviderOrderItemView AddItem(Guid id,  
             ProviderOrderItemDto dto)
         {
-            var order = repository.ListAll().FirstOrDefault(o => o.Id == id);
+            var order = _repository.ListAll().FirstOrDefault(o => o.Id == id);
 
             if (order == null)
                 throw new ArgumentException("Order not found.");
 
-            var product = productRepository.ListAll().FirstOrDefault(p => p.Id == dto.ProductId);
+            var product = _productRepository.ListAll().FirstOrDefault(p => p.Id == dto.ProductId);
 
             if (product == null)
                 throw new ArgumentException("Product not found.");
 
             ProviderOrderItem item = order.AddItem(product, dto.Amount);
 
-            repository.Update(order);
+            _repository.Update(order);
 
             return new ProviderOrderItemView()
                 {
@@ -158,9 +168,9 @@ namespace Deposit.Application.Services
                 
         }
 
-        public void DeleteProviderOrder(IRepository<ProviderOrder> repository, Guid id)
+        public void DeleteProviderOrder(Guid id)
         {   
-            repository.Delete(id);
+            _repository.Delete(id);
         }        
     }
 }

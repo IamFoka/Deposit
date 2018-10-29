@@ -8,9 +8,16 @@ namespace Deposit.Application.Services
 {
     public class CustomerOrderItemServices
     {
-        public void UpdateCustomerOrderItem(IRepository<CustomerOrderItem> repository, Guid id, CustomerOrderItemDto dto)
+        private readonly IRepository<CustomerOrderItem> _repository;
+
+        public CustomerOrderItemServices(IRepository<CustomerOrderItem> repository)
         {
-            var item = repository.ListAll().FirstOrDefault(i => i.Id == id);
+            _repository = repository;
+        }
+
+        public void UpdateCustomerOrderItem(Guid id, CustomerOrderItemDto dto)
+        {
+            var item = _repository.ListAll().FirstOrDefault(i => i.Id == id);
             
             if (item == null)
                 throw new ArgumentException("Item not found.");

@@ -13,15 +13,11 @@ namespace Deposit.WebApi.Controllers
     [ApiController]
     public class CustomerOrdersController : ControllerBase
     {
-        private readonly IRepository<CustomerOrder> _repository;
-        private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<Customer> _customerRepository;
+        private readonly CustomerOrderServices _customerOrderServices;
 
-        public CustomerOrdersController(IRepository<CustomerOrder> repository, IRepository<Product> productRepository, IRepository<Customer> customerRepository)
+        public CustomerOrdersController(CustomerOrderServices customerOrderServices)
         {
-            _repository = repository;
-            _productRepository = productRepository;
-            _customerRepository = customerRepository;
+            _customerOrderServices = customerOrderServices;
         }
 
         [HttpGet]
@@ -29,8 +25,7 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetCustomerOrders()
         {
-            var customerOrderServices = new CustomerOrderServices();
-            var customerOrders = customerOrderServices.GetAllOrders(_repository);
+            var customerOrders = _customerOrderServices.GetAllOrders();
 
             if (customerOrders == null)
                 return NotFound();
@@ -43,8 +38,7 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetCustomerOrder(Guid id)
         {
-            var customerOrderServices = new CustomerOrderServices();
-            var customerOrder = customerOrderServices.GetOrder(_repository, id);
+            var customerOrder = _customerOrderServices.GetOrder(id);
 
             if (customerOrder == null)
                 return NotFound();
@@ -57,11 +51,9 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateCustomerOrder([FromBody] CustomerOrderDto dto)
         {
-            var customerOrderServices = new CustomerOrderServices();
-
             try
             {
-                return Ok(customerOrderServices.CreateOrder(_repository, _customerRepository, _productRepository, dto));
+                return Ok(_customerOrderServices.CreateOrder(dto));
             }
             catch (ArgumentException e)
             {
@@ -74,11 +66,9 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(400)]
         public IActionResult DeleteCostumerOrder(Guid id)
         {
-            var customerOrderServices = new CustomerOrderServices();
-
             try
             {
-                customerOrderServices.DeleteCustomerOrder(_repository, id);
+                _customerOrderServices.DeleteCustomerOrder(id);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -92,11 +82,9 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(400)]
         public IActionResult AddCustomerOrderItem(Guid id, [FromBody] CustomerOrderItemDto dto)
         {
-            var services = new CustomerOrderServices();
-
             try
             {
-                CustomerOrderItemView  itemView = services.AddItem(_repository, _productRepository, id, dto);
+                CustomerOrderItemView  itemView = _customerOrderServices.AddItem(id, dto);
                 return Ok(itemView);
             }
             catch (ArgumentException e)

@@ -8,10 +8,17 @@ using Deposit.Application.Dtos;
 namespace Deposit.Application.Services
 {
     public class ProviderOrderItemServices
-    {
-        public void UpdateProviderOrderItem(IRepository<ProviderOrderItem> repository, Guid id, ProviderOrderItemDto dto)
+    {   
+        private readonly IRepository<ProviderOrderItem> _repository;
+
+        public ProviderOrderItemServices(IRepository<ProviderOrderItem> repository)
         {
-            var item = repository.ListAll().FirstOrDefault(i => i.Id == id);
+            _repository = repository;
+        }
+
+        public void UpdateProviderOrderItem(Guid id, ProviderOrderItemDto dto)
+        {
+            var item = _repository.ListAll().FirstOrDefault(i => i.Id == id);
             
             if (item == null)
                 throw new ArgumentException("Item not found.");

@@ -10,11 +10,11 @@ namespace Deposit.WebApi.Controllers
     [Route("deposit/customer-orders/items")]
     public class CustomerOrderItemsController : ControllerBase
     {
-        private readonly IRepository<CustomerOrderItem> _repository;
+        private readonly CustomerOrderItemServices _customerOrderItemServices;
 
-        public CustomerOrderItemsController(IRepository<CustomerOrderItem> repository)
+        public CustomerOrderItemsController(CustomerOrderItemServices customerOrderItemServices)
         {
-            _repository = repository;
+            _customerOrderItemServices = customerOrderItemServices;
         }
 
         [HttpPatch("{id}")]
@@ -23,11 +23,9 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateCustomerOrderItem(Guid id, [FromBody] CustomerOrderItemDto dto)
         {
-            var services = new CustomerOrderItemServices();
-
             try
             {
-                services.UpdateCustomerOrderItem(_repository, id, dto);
+                _customerOrderItemServices.UpdateCustomerOrderItem(id, dto);
                 return Ok();
             }
             catch (ArgumentException e)

@@ -14,13 +14,12 @@ namespace Deposit.WebApi.Controllers
     [ApiController]
     public class ProvidersController : ControllerBase
     {
-        private readonly IRepository<Provider> _repository;
-        private readonly IRepository<ProviderOrder> _orderRepository;
-
-        public ProvidersController(IRepository<Provider> repository, IRepository<ProviderOrder> orderRepository)
+        private readonly ProviderServices _providerServices;
+        private readonly ProviderOrderServices _providerOrderServices;
+        public ProvidersController(ProviderServices providerServices, ProviderOrderServices providerOrderServices)
         {
-            _repository = repository;
-            _orderRepository = orderRepository;
+            _providerServices = providerServices;
+            _providerOrderServices = providerOrderServices;
         }
 
         [HttpGet]
@@ -28,8 +27,7 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetProviders()
         {
-            var services = new ProviderServices();
-            var providers = services.GetAllProviders(_repository);
+            var providers = _providerServices.GetAllProviders();
 
             if (providers.Count == 0)
                 return NotFound();
@@ -43,12 +41,11 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetProvider(Guid id)
         {
-            var services = new ProviderServices();
             ProviderView provider;
 
             try
             {
-                provider = services.GetProvider(_repository, id);
+                provider = _providerServices.GetProvider(id);
             }
             catch (InvalidOperationException e)
             {
@@ -67,11 +64,9 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateProvider([FromBody] ProviderDto dto)
         {
-            var services = new ProviderServices();
-
             try
             {
-                return Ok(services.CreateProvider(_repository, dto));
+                return Ok(_providerServices.CreateProvider(dto));
             }
             catch (ArgumentException e)
             {
@@ -83,12 +78,10 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public IActionResult DeleteProvider(Guid id)
-        {
-            var services = new ProviderServices();
-            
+        {            
             try
             {
-                services.DeleteProvider(_repository, id);
+                _providerServices.DeleteProvider(id);
                 return Ok();
             }
             catch (ArgumentException)
@@ -103,11 +96,9 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateProvider(Guid id, [FromBody] ProviderDto dto)
         {
-            var services = new ProviderServices();
-
             try
             {
-                services.UpdateProvider(_repository, id, dto);
+                _providerServices.UpdateProvider(id, dto);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -124,9 +115,7 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetProviderOrders()
         {
-            var services = new ProviderServices();
-
-            var providers = services.GetAllOrders(_repository, _orderRepository);
+            var providers = _providerServices.GetAllOrders();
 
             if (providers.Count == 0)
                 return NotFound();
@@ -139,9 +128,8 @@ namespace Deposit.WebApi.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetProviderOrders(Guid id)
         {
-            var services = new ProviderOrderServices();
 
-            var orders = services.GetAllOrders(_orderRepository, id);
+            var orders = _providerOrderServices.GetAllOrders(id);
 
             if (orders.Count == 0)
                 return NotFound();
