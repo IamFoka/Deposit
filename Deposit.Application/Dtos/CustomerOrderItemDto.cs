@@ -1,8 +1,8 @@
 using System;
 
-namespace Deposit.WebApi.Dtos
+namespace Deposit.Application.Dtos
 {
-    public class ProviderOrderItemDto
+    public class CustomerOrderItemDto
     {
         public Guid ProductId { get; set; }
         public float Amount { get; set; }

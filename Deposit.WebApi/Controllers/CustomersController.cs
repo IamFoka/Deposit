@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Deposit.Data.Interfaces;
-using Deposit.WebApi.Dtos;
-using Deposit.WebApi.Services;
+using Deposit.Application.Dtos;
+using Deposit.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Deposit.Data.Repositories;
 using Deposit.Domain.Entities;
-using Deposit.Views;
+using Deposit.Application.Views;
 
 namespace Deposit.WebApi.Controllers
 {

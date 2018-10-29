@@ -2,14 +2,13 @@ using System;
 using System.Linq;
 using Deposit.Data.Interfaces;
 using Deposit.Domain.Entities;
-using Deposit.Views;
-using Deposit.WebApi.Dtos;
+using Deposit.Application.Dtos;
 
-namespace Deposit.WebApi.Services
+namespace Deposit.Application.Services
 {
-    public class ProviderOrderItemServices
+    public class CustomerOrderItemServices
     {
-        public void UpdateProviderOrderItem(IRepository<ProviderOrderItem> repository, Guid id, ProviderOrderItemDto dto)
+        public void UpdateCustomerOrderItem(IRepository<CustomerOrderItem> repository, Guid id, CustomerOrderItemDto dto)
         {
             var item = repository.ListAll().FirstOrDefault(i => i.Id == id);
             
@@ -21,6 +20,6 @@ namespace Deposit.WebApi.Services
             
             if (dto.Price != 0)
                 item.ChangePrice(dto.Price);
-        }   
+        }
     }
 }

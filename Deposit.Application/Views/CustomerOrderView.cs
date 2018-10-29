@@ -1,6 +1,6 @@
 using System;
 
-namespace Deposit.Views
+namespace Deposit.Application.Views
 {
     public class CustomerOrderView
     {

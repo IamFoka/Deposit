@@ -1,4 +1,4 @@
-namespace Deposit.WebApi.Dtos
+namespace Deposit.Application.Dtos
 {
     public class ProviderDto
     {

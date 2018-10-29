@@ -22,13 +22,6 @@ namespace Deposit.Data.Repositories
             _context.CustomerOrders.Add(customerOrder);
             _context.SaveChanges();
 
-            // if (customerOrder.CustomerOrderItems.Count == 0)
-            //     return;
-
-            // var customerOrderItemRepository = new CustomerOrderItemRepository(_context);
-
-            // foreach (var customerOrderItem in customerOrder.CustomerOrderItems)
-            //     customerOrderItemRepository.Add(customerOrderItem);
         }
 
         public IEnumerable<CustomerOrder> ListAll()

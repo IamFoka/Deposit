@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Deposit.Data.Interfaces;
-using Deposit.Views;
-using Deposit.WebApi.Dtos;
-using Deposit.WebApi.Services;
+using Deposit.Application.Views;
+using Deposit.Application.Dtos;
+using Deposit.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Deposit.Domain.Entities;
 

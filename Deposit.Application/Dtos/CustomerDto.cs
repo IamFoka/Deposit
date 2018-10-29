@@ -1,6 +1,6 @@
 using System;
 
-namespace Deposit.WebApi.Dtos
+namespace Deposit.Application.Dtos
 {
     public class CustomerDto
     {

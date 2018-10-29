@@ -21,6 +21,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Deposit.Data\Deposit.Data.csproj" />
     <ProjectReference Include="..\Deposit.Domain\Deposit.Domain.csproj" />
+    <ProjectReference Include="..\Deposit.Application\Deposit.Application.csproj" />
+
   </ItemGroup>
 
 </Project>
